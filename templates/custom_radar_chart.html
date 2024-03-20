@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<style>
+  .container {
+      text-align: center;
+      margin-top: 20px;
+  }
+  .highlighted-section, .boxplot, .boxplot-labels {
+      border: 2px solid #4CAF50;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      background-color: #f9f9f9;
+      margin: 20px auto;
+      width: 550px; /* Match the width of the radar chart */
+      display: block;
+  }
+  #radarChart {
+      height: 500px;
+      margin-bottom: 15px; /* Space between radar chart and box plots */
+  }
+  .boxplot svg {
+      display: block; /* Align svg inside div */
+      margin: auto; /* Center svg */
+  }
+  .boxplot-labels {
+      display: flex;
+      justify-content: space-between; /* Spread the labels across */
+      padding: 0 10px; /* Padding to align with the boxplot scale */
+      width: 550px; /* Match the width of the radar chart */
+      margin: 0 auto 20px; /* Center it under the radar chart and provide some space before box plots */
+  }
+  .boxplot-label {
+      font-size: 12px;
+  }
+  .info-section {
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+      box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  }
+  .info-section h5 {
+      margin-top: 0;
+  }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+              <h4 style="text-align: center;">통합 차트</h4>
+              <div id="radarChart" class="highlighted-section"></div>
+              <div class="boxplot-labels">
+                <span class="boxplot-label">부족</span>
+                <span class="boxplot-label">정상</span>
+                <span class="boxplot-label">과다</span>
+              </div>
+              <div class="boxplot" id="boxplotWBC"></div>
+              <div class="boxplot" id="boxplotRBC"></div>
+              <div class="boxplot" id="boxplotPLT"></div>
+              <div class="boxplot" id="boxplotHb"></div>
+              <div class="boxplot" id="boxplotHct"></div>
+        </div>
+        <div class="col-md-4">
+           <div class="info-section">
+               <strong>RBC 수치가 정상을 초과하셨네요!</strong>
+               <h5><a href="https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919#:~:text=For%20a%20complete%20blood%20count%2C%20a%20member%20of%20the%20health,the%20bend%20in%20your%20elbow.">더 알아보기</a></h5>
+                    For a complete blood count, a member of the health care team takes a sample of blood by inserting a needle into a vein in your arm, usually at the bend in your elbow. The blood sample is sent to a lab. After the test, you can return to your usual activities immediately.
+                <h5>Results</h5>
+                The following are expected complete blood count results for adults, measured in cells per liter (cells/L) or grams per deciliter (grams/dL):
+                <ul>
+                        <li>Red blood cell count: Male: 4.35-5.65 trillion cells/L, Female: 3.92-5.13 trillion cells/L</li>
+                        <li>Hemoglobin: Male: 13.2-16.6 grams/dL, Female: 11.6-15 grams/dL</li>
+                        <li>Hematocrit: Male: 38.3%-48.6%, Female: 35.5%-44.9%</li>
+                        <li>White blood cell count: 3.4-9.6 billion cells/L</li>
+                        <li>Platelet count: Male: 135 billion to 317 billion/L Female: 157 billion to 371 billion/L</li>
+                </ul>
+           </div>
+            <div class="info-section">
+               <h5 style="text-align: center;">관련 건강보조 식품</h5>
+                <div style="display: flex; justify-content: space-around;">
+                    <a href="https://kr.iherb.com/pr/real-ketones-keto-bhb-gummies-grape-400-mg-30-gummies-200-mg-per-gummy/131566?gad_source=1&gclid=CjwKCAjw7-SvBhB6EiwAwYdCAYFD5QHmAMZqjiZGQXEoFPOdLzqTfG3O2vGGw0PtZdcpTCS7aO3GAxoCF3MQAvD_BwE&gclsrc=aw.ds"><img src="{% static 'BHB1.png' %}" alt="BHB1" style="width: 100%; height: auto;"></a>
+                    <a href="https://kr.iherb.com/pr/keto-science-keto-burn-bhb-gummies-raspberry-60-gummies/134210?gad_source=1&gclid=CjwKCAjw7-SvBhB6EiwAwYdCAT4Hg11LmdLSILaWrK3vZGQdB_0OhR0jejWOXmVKpeZjLEobhfwCJxoCTeAQAvD_BwE&gclsrc=aw.ds"><img src="{% static 'BHB2.png' %}" alt="BHB2" style="width: 100%; height: auto;"></a>
+                </div>
+           </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<!-- Make sure to include jQuery if you're using $(document).ready -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    const width = 450, height = 450;
+    const svg = d3.select('#radarChart').append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', `translate(${width / 2}, ${height / 2})`);
+    const numCircles = 5;
+    const radius = height / 2;
+    for (let i = 1; i <= numCircles; i++) {
+        svg.append('circle')
+            .attr('r', radius * i / numCircles)
+            .style('fill', 'none')
+            .style('stroke', 'grey')
+            .style('stroke-dasharray', '2');
+    }
+    function calculatePentagonPoints(centerX, centerY, size) {
+        let points = [];
+        for (let i = 0; i < 5; i++) {
+            let angle = (Math.PI / 2) + (2 * Math.PI / 5) * i;
+            let x = centerX + size * Math.cos(angle);
+            let y = centerY - size * Math.sin(angle);
+            points.push({ x, y });
+        }
+        return points;
+    }
+    const pentagonSize = radius * 0.8;
+    const pentagonPoints = calculatePentagonPoints(0, 0, pentagonSize);
+    svg.append('polygon')
+        .data([pentagonPoints])
+        .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+        .attr('stroke', 'green')
+        .attr('stroke-width', 2)
+        .attr('fill', 'none');
+    const smallerPentagonSize = pentagonSize * 0.6;
+    const smallerPentagonPoints = calculatePentagonPoints(0, 0, smallerPentagonSize);
+    svg.append('polygon')
+        .data([smallerPentagonPoints])
+        .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+        .attr('fill', 'none')
+        .attr('stroke', 'green')
+        .attr('stroke-width', 2);
+    pentagonPoints.forEach((outerPoint, i) => {
+        svg.append('polygon')
+            .data([[smallerPentagonPoints[i], outerPoint, pentagonPoints[(i + 1) % 5], smallerPentagonPoints[(i + 1) % 5]]])
+            .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+            .attr('fill', 'lightgreen')
+            .attr('fill-opacity', 0.3)
+            .attr('stroke', 'none');
+    });
+
+    // hard code data for the demo
+    const data = [
+        { axis: "백혈구(WBC)", value: 5.0, min: 0.0, max: 12.0, normal: [4.0, 10.0] },
+        { axis: "적혈구(RBC)", value: 6.2, min: 0.0, max: 6.9, normal: [4.1, 5.6] },
+        { axis: "혈소판수(PLT)", value: 180, min: 0.0, max: 400.0, normal: [150, 370] },
+        { axis: "헤모글로빈(Hb)", value: 15.6, min: 0.0, max: 20.0, normal: [13.0, 16.5] },
+        { axis: "적횰구용적(Hct)", value: 42, min: 0.0, max: 70.0, normal: [39.0, 51.0] }
+    ];
+
+    const rScale = d3.scaleLinear().range([0, radius]).domain([0, 100]);
+
+    // Function to calculate the angle of the axis
+    const angleSlice = Math.PI * 2 / data.length;
+    const calculateAngle = (index) => angleSlice * index - Math.PI / 2;
+
+    // Function to normalize the values
+    const normalize = (value, min, max) => (value - min) / (max - min);
+
+
+    let allPoints = []; // Store all points
+
+    // Plotting the points for each axis
+    data.forEach((d, i) => {
+        const angle = calculateAngle(i);
+        const valueNormalized = normalize(d.value, d.min, d.max) * 100; // Normalized to percentage
+        const normalRangeMinNormalized = normalize(d.normal[0], d.min, d.max) * 100;
+        const normalRangeMaxNormalized = normalize(d.normal[1], d.min, d.max) * 100;
+
+        let pointRadius;
+        let color = 'red';
+
+        // Check if the value is within the normal range
+        if (valueNormalized >= normalRangeMinNormalized && valueNormalized <= normalRangeMaxNormalized) {
+            color = 'green';
+            // Linearly map the normalized value within the normal range to the radius between the small and large pentagon sizes
+            const rangeScale = d3.scaleLinear()
+                .domain([normalRangeMinNormalized, normalRangeMaxNormalized])
+                .range([smallerPentagonSize, pentagonSize]);
+            pointRadius = rangeScale(valueNormalized);
+        } else {
+            // Outside the normal range, use the outer scale
+            pointRadius = rScale(valueNormalized);
+        }
+
+        const x = pointRadius * Math.cos(angle);
+        const y = pointRadius * Math.sin(angle);
+
+        // Draw the point
+        svg.append('circle')
+            .attr('class', 'radar-chart-point')
+            .attr('cx', x)
+            .attr('cy', y)
+            .attr('r', 4)
+            .style('fill', color);
+
+        // Position the labels outside the largest pentagon
+        const labelRadius = pentagonSize * 1.1; // 10% larger than the size of the pentagon
+        const labelX = labelRadius * Math.cos(angle);
+        const labelY = labelRadius * Math.sin(angle);
+
+        svg.append('text')
+            .attr('x', labelX)
+            .attr('y', labelY)
+            .text(d.axis)
+            .style('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .attr('alignment-baseline', 'middle');
+
+        allPoints.push({ x, y, color });
+    });
+
+    for (let i = 0; i < allPoints.length; i++) {
+        const pointA = allPoints[i];
+        const pointB = allPoints[(i + 1) % allPoints.length]; // Ensures the last point connects to the first
+
+        const lineColor = pointA.color === 'red' || pointB.color === 'red' ? 'red' : 'black';
+
+        svg.append('line')
+            .attr('x1', pointA.x)
+            .attr('y1', pointA.y)
+            .attr('x2', pointB.x)
+            .attr('y2', pointB.y)
+            .attr('stroke', lineColor)
+            .attr('stroke-width', 2);
+    }
+
+
+
+    // Create box plots for each data point
+
+    function sanitizeId(name) {
+        // Remove parentheses, spaces, and non-alphanumeric characters except for underscores and dashes
+        // Also, add a prefix if the first character is a digit
+        let newName = name.replace(/[\s\(\)]/g, '');
+        newName = newName.replace(/[^a-zA-Z0-9-_]/g, '');
+        if (newName.match(/^\d/)) {
+            newName = 'id' + newName; // prefix with 'id' to avoid numbers at the start
+        }
+        return newName;
+    }
+
+    data.forEach(d => {
+        drawBoxPlot(d, `#boxplot${sanitizeId(d.axis)}`);
+    });
+
+    function drawBoxPlot(d, selector) {
+        const boxplotWidth = 550;
+        const boxplotHeight = 100;
+        const margin = { top: 10, right: 30, bottom: 30, left: 40 };
+        const width = boxplotWidth - margin.left - margin.right;
+        const height = boxplotHeight - margin.top - margin.bottom;
+
+        const svg = d3.select(selector)
+            .append('svg')
+            .attr('width', boxplotWidth)
+            .attr('height', boxplotHeight)
+            .append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        const y = d3.scaleLinear()
+            .domain([d.min, d.max])
+            .range([0, width]);
+
+        // Define the div for the tooltip
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        // Draw whisker lines (min-max)
+        svg.append('line')
+            .attr('x1', y(d.min))
+            .attr('x2', y(d.max))
+            .attr('y1', height/2)
+            .attr('y2', height / 2)
+            .style('stroke', 'black')
+            .style('stroke-width', '1px');
+        // Draw the box for the normal range
+        svg.append('rect')
+            .attr('x', y(d.normal[0]))
+            .attr('y', height / 4)
+            .attr('width', y(d.normal[1]) - y(d.normal[0]))
+            .attr('height', height / 2)
+            .attr('fill', '#90EE90')
+            .on("mouseover", function(event, data) {
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html(`Normal Range: ${d.normal[0]} - ${d.normal[1]}`)
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+                })
+            .on("mouseout", function(d) {
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+
+        // Draw the median line (value)
+        svg.append('line')
+            .attr('x1', y(d.value))
+            .attr('x2', y(d.value))
+            .attr('y1', height / 4)
+            .attr('y2', (height / 4) * 3)
+            .style('stroke', 'red')
+            .style('stroke-width', '2px');
+
+        // Label at the bottom of the box plot
+        svg.append('text')
+            .attr('x', width / 2)
+            .attr('y', height + margin.bottom / 2)
+            .text(d.axis)
+            .style('text-anchor', 'middle')
+            .style('font-size', '10px');
+    }
+});
+</script>
+{% endblock %}

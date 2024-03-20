@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tz %}
+<!-- main landing page information -->
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            {% if user.is_authenticated %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-md-2 text-center">
+                            {% if profile.profile_picture %}
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+                            {% else %}
+                            <img src="{% static 'default_profile_pic.png' %}" alt="Default Profile Picture" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-10">
+                            <h3 class="card-title">{{ user.username }}의 프로필</h3>
+                            <p class="card-text">체중: {{ profile.weight }} kg</p>
+                            <p class="card-text">신장: {{ profile.height }} cm</p>
+                            {% if profile.bmi %}
+                            <p class="card-text">BMI: {{ profile.bmi|floatformat:2 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-8">
+                    <h3 class="text-center mb-4">통합 차트</h3>
+                    <p class="text-center">{{ current_datetime }}</p>
+                    <div class="text-center mt-4 mb-4">
+                        <button id="btn-blood-test" class="btn btn-primary" onclick="showChart('blood-test')">혈액검사</button>
+                        <button id="btn-blood-pressure" class="btn btn-secondary" onclick="showChart('blood-pressure')">혈압</button>
+                        <button id="btn-blood-sugar" class="btn btn-secondary" onclick="showChart('blood-sugar')">혈당</button>
+                        <button id="btn-walking" class="btn btn-secondary" onclick="showChart('walking')">걷기</button>
+                        <button id="btn-weight" class="btn btn-secondary" onclick="showChart('weight')">체중</button>
+                    </div>
+                    <div id="blood-test-chart" class="chart-container" style="position: relative; height:50vh; width:100%">
+                        <canvas id="myRadarChart"></canvas>
+                    </div>
+                    <!-- Blood Pressure Chart Placeholder -->
+                    <div id="blood-pressure-chart" class="chart-container" style="display:none;">
+                        <canvas id="myBloodPressureChart"></canvas>
+                    </div>
+                    <!-- Blood Sugar Chart Placeholder -->
+                    <div id="blood-sugar-chart" class="chart-container" style="display:none;">
+                        <canvas id="myBloodSugarChart"></canvas>
+                    </div>
+                    <!-- Walking Chart Placeholder -->
+                    <div id="walking-chart" class="chart-container" style="display:none;">
+                        <canvas id="myWalkingChart"></canvas>
+                    </div>
+                    <!-- weight -->
+                    <div id="weight-chart" class="chart-container" style="display:none;">
+                        <canvas id="myWeightChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h4>건강 데이터 관리</h4>
+
+                    <div id="health-data-page-1" class="health-data">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger">혈액검사</h5>
+                                <p class="card-text">하루전의 혈액검사 결과입니다.</p>
+                                <div class="chart-container" style="position: relative; height:40vh; width:100%">
+                                    <canvas id="myRadarChart2"></canvas>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">측정시간: 2024-03-13 07:50</small>
+                                    <button class="btn btn-danger">혈액검사 하기</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">혈압</h5>
+                                <p class="card-text">오늘의 혈압을 입력하세요.</p>
+                                <button class="btn btn-primary mb-2">입력하기</button>
+                                <div class="p-2 mt-2 bg-light border rounded">
+                                    <span class="font-weight-bold text-secondary">118/80 mmHg</span> | 측정시간: 2024-03-13 08:40
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">혈당</h5>
+                                <p class="card-text">오늘의 혈당을 입력하세요.</p>
+                                <button class="btn btn-success mb-2">입력하기</button>
+                                <div class="p-2 mt-2 bg-light border rounded">
+                                    <span class="font-weight-bold text-secondary">88 mg/dL</span> | 측정시간: 2024-03-13 08:59
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="health-data-page-2" class="health-data" style="display:none;">
+                        <!-- 복약 Section -->
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning">복약</h5>
+                                <p class="card-text">2회 / 하루</p>
+                                <div class="mb-2">혈압약: <span class="font-weight-bold">1 / 2</span></div>
+                                <button class="btn btn-warning mb-2">업데이트</button>
+                                <div class="p-2 mt-2 bg-light border rounded">
+                                    <span class="font-weight-bold text-secondary">측정시간: 2024-03-13 07:00</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- 걷기 Section -->
+                        <div class="health-section mb-4 p-3" style="background-color: #f0f0f0; border-radius: 10px;">
+                            <h5 class="text-primary">걷기</h5>
+                            <p class="font-weight-bold">9862 / 10000 걸음</p>
+                            <input type="text" class="form-control mb-2" placeholder="오늘의 걸음 수를 입력하세요" />
+                            <button class="btn btn-outline-primary btn-block">업데이트</button>
+                        </div>
+
+                        <div class="health-section mb-4 p-3" style="background-color: #f0f0f0; border-radius: 10px;">
+                            <h5 class="text-success">체중</h5>
+                            <p class="font-weight-bold">90 kg</p>
+                            <input type="text" class="form-control mb-2" placeholder="오늘의 체중을 입력하세요" />
+                            <button class="btn btn-outline-success btn-block">업데이트</button>
+                        </div>
+                    </div>
+
+                    <div class="pagination-controls text-center">
+                        <button onclick="changePage(1)" class="btn btn-primary">1</button>
+                        <button onclick="changePage(2)" class="btn btn-secondary">2</button>
+                    </div>
+
+                </div>
+            </div>
+            <br><br><br><br>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var normalRanges = {
+        WBC: { min: 4.0, max: 10.0 },
+        RBC: { min: 4.1, max: 5.6 },
+        PLT: { min: 150, max: 370 },
+        Hb: { min: 13.0, max: 16.5 },
+        Hct: { min: 39.0, max: 51.0 }
+    };
+
+    var chartLabels = {{ chart_data.labels|safe }};
+    var chartDataValues = {{ chart_data.data|safe }};
+
+    function normalize(value, min, max) {
+        return (value - min) / (max - min);
+    }
+
+    // Calculate normalized data values for chart display
+    var normalizedDataValues = chartDataValues.map(function(value, index) {
+        var label = chartLabels[index];
+        var range = normalRanges[label];
+        return normalize(value, range.min, range.max) * 100; // Scale to 0-100 for visualization
+    });
+
+    // Determine point colors based on value being in/out of range
+    var pointColors = chartDataValues.map(function(value, index) {
+        var label = chartLabels[index];
+        var range = normalRanges[label];
+        return (value >= range.min && value <= range.max) ? 'green' : 'red';
+    });
+
+
+    // Create the radar chart
+    var ctx = document.getElementById('myRadarChart').getContext('2d');
+    var myRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: '분석 결과',
+                data: normalizedDataValues,
+                fill: true,
+                backgroundColor: 'rgba(0, 123, 255, 0.2)', // Example background color
+                borderColor: 'rgb(0, 123, 255)',
+                pointBackgroundColor: pointColors,
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(0, 123, 255)'
+            }]
+        },
+        options: {
+            scale: {
+                ticks: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var label = data.labels[tooltipItem.index];
+                        var absoluteValue = chartDataValues[tooltipItem.index];
+                        return label + ': ' + absoluteValue;
+                    }
+                }
+            }
+        }
+    });
+
+    /* comment */
+
+
+    function showChart(chartType) {
+        // Logic to switch charts based on the button pressed
+        var chartContainers = document.getElementsByClassName('chart-container');
+        for (var i = 0; i < chartContainers.length; i++) {
+            chartContainers[i].style.display = 'none';
+        }
+
+        document.getElementById(chartType + '-chart').style.display = 'block';
+
+        // Deactivate all buttons
+        var buttons = document.getElementsByTagName('button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].className = buttons[i].className.replace('btn-primary', 'btn-secondary');
+        }
+
+        // Activate the clicked button
+        document.getElementById('btn-' + chartType).className += ' btn-primary';
+
+        // Based on the button clicked, show the relevant chart
+        switch(chartType) {
+            case 'blood-test':
+                // Radar chart already initialized, so we don't need to do anything here
+                break;
+            case 'blood-pressure':
+                initBloodPressureChart();
+                break;
+            case 'blood-sugar':
+                initBloodSugarChart();
+                break;
+            case 'walking':
+                initWalkingChart();
+                break;
+            case 'weight':
+                initWeightChart();
+                break;
+        }
+    }
+
+    function initBloodPressureChart() {
+        var bpCtx = document.getElementById('myBloodPressureChart').getContext('2d');
+        if(window.myBloodPressureChart instanceof Chart) {
+            window.myBloodPressureChart.destroy();
+        }
+        window.myBloodPressureChart = new Chart(bpCtx, {
+            type: 'line',
+            data: {
+                labels: ["2024-03-06", "2024-03-07", "2024-03-08", "2024-03-09", "2024-03-10", "2024-03-11", "2024-03-12", "2024-03-13"],
+                datasets: [{
+                    label: '혈압 Systolic (mmHg)',
+                    data: [120, 115, 118, 117, 119, 116, 121, 118],
+                    fill: false,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }, {
+                    label: '혈압 Diastolic (mmHg)',
+                    data: [80, 75, 78, 76, 79, 77, 81, 80],
+                    fill: false,
+                    borderColor: 'rgb(54, 162, 235)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize Blood Sugar Chart
+    function initBloodSugarChart() {
+        var bsCtx = document.getElementById('myBloodSugarChart').getContext('2d');
+        var myBloodSugarChart = new Chart(bsCtx, {
+            type: 'line', // Assuming you want a line chart for Blood Sugar
+            data: {
+                labels: ["2024-03-06", "2024-03-07", "2024-03-08", "2024-03-09", "2024-03-10", "2024-03-11", "2024-03-12", "2024-03-13"],
+                datasets: [{
+                    label: '혈당 (mg/dL)',
+                    data: [90, 95, 85, 92, 88, 96, 87, 88],
+                    fill: false,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            }
+        });
+    }
+
+    // Initialize Walking Chart
+    function initWalkingChart() {
+        var walkCtx = document.getElementById('myWalkingChart').getContext('2d');
+        var myWalkingChart = new Chart(walkCtx, {
+            type: 'bar', // Assuming you want a bar chart for Walking data
+            data: {
+                labels: ["2024-03-06", "2024-03-07", "2024-03-08", "2024-03-09", "2024-03-10", "2024-03-11", "2024-03-12", "2024-03-13"],
+                datasets: [{
+                    label: '걷기 (steps)',
+                    data: [1000, 2000, 2500, 3000, 2700, 2768, 6000, 9862],
+                    fill: false,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    borderWidth: 1
+                }]
+            }
+        });
+    }
+
+    // Initialize Weight Chart function
+    function initWeightChart() {
+        var weightCtx = document.getElementById('myWeightChart').getContext('2d');
+        if (window.myWeightChart instanceof Chart) {
+            window.myWeightChart.destroy(); // Destroy previous instance if exists
+        }
+        window.myWeightChart = new Chart(weightCtx, {
+            type: 'line', // Line chart for weight
+            data: {
+                labels: ["2024-03-06", "2024-03-07", "2024-03-08", "2024-03-09", "2024-03-10", "2024-03-11", "2024-03-12", "2024-03-13"], // Example dates
+                datasets: [{
+                    label: '체중 (kg)',
+                    data: [92, 93, 93, 94, 92, 91, 92, 90], // Example weight data
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    }
+
+    function changePage(pageNumber) {
+        var page1 = document.getElementById('health-data-page-1');
+        var page2 = document.getElementById('health-data-page-2');
+        var btn1 = document.querySelector('.pagination-controls button:nth-child(1)');
+        var btn2 = document.querySelector('.pagination-controls button:nth-child(2)');
+
+        // Toggle visibility based on pageNumber
+        if(pageNumber === 1) {
+            page1.style.display = 'block';
+            page2.style.display = 'none';
+            btn1.classList.replace('btn-secondary', 'btn-primary');
+            btn2.classList.replace('btn-primary', 'btn-secondary');
+        } else if (pageNumber === 2) {
+            page1.style.display = 'none';
+            page2.style.display = 'block';
+            btn1.classList.replace('btn-primary', 'btn-secondary');
+            btn2.classList.replace('btn-secondary', 'btn-primary');
+        }
+    }
+
+
+    // Initially display the radar chart
+    showChart('blood-test');
+
+    changePage(1);
+</script>
+{% endblock %}
