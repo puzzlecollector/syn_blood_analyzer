@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<style>
+     .info-icon {
+        cursor: pointer;
+        color: #007bff; /* Bootstrap primary color, adjust as needed */
+        margin-left: 5px;
+        max-width: 400px;
+    }
+
+    /* Custom tooltip width for wider-tooltip class */
+    .wider-tooltip {
+        max-width: 300px; /* Adjust this value as needed */
+        white-space: normal;
+    }
+
+    .red-text {
+        color: red;
+    }
+</style>
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">혈액검사</h2>
+    <p class="text-muted"><a href="#">⬅️</a>&nbsp;&nbsp; 검사일: 2024년 3월 21일 14:00</p>
+
+    <div id="radarChart" class="highlighted-section"></div>
+
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th scope="col">항목</th>
+                <th scope="col">결과</th>
+                <th scope="col">정상범위</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>백혈구수 (WBC) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="백혈구는 골수에서 생성되어 감염이 있을 때 신체를 방어하고 면역반응에 관여하여 감염을 일으킨 세균, 진균, 바이러스 등을 공격하여 제거합니다. 백혈구증가증은 백혈구수가 정상치보다 많은 경우로 세균감염, 염증, 백혈병, 외상, 심한 운동, 임신, 스트레스로 인해 발생할 수 있습니다. 백혈구감소증은 백혈구수가 정상치보다 적은 경우로 화학요법, 방사선 치료, 면역체계에 영향을 끼치는 질환 등 다양한 원인에 의해 발생할 수 있습니다. 백혈구수는 아침에는 낮고 오후에는 높은 경향을 보입니다. 정상 신생아는 성인보다 높은 백혈구 수치를 보이고, 노령층은 감염이 있어도 백혈구증가증이 동반되지 않을 수 있습니다. ※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>5.0</td>
+                <td>4.0~10.0 µL</td>
+            </tr>
+            <tr>
+                <td style="color: red;">적혈구수 (RBC) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="적혈구는 신체 구석구석에 산소를 운반하여 신진대사를 원활하게 도와줍니다. 적혈구 수는 혈액에서 발견되는 총 적혈구 수를 나타내며, 정상범위보다 적혈구 수치가 낮은 상태를 빈혈, 정상범위보다 높은 상태를 적혈구증가증이라고 합니다.적혈구감소증은 출혈, 빈혈 등으로 인해 발생할 수 있습니다. 적혈구증가증은 탈수, 폐기종, 심한 운동, 흡연 등으로 인해 발생할 수 있습니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>6.2</td>
+                <td>4.1~5.6 µL</td>
+            </tr>
+            <tr>
+                <td>혈소판 (PLT) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="혈소판은 혈액 응고를 담당합니다. 혈소판수가 너무 적으면 과도한 출혈이나 멍이 생길 수 있고, 혈소판수가 너무 많으면 혈액이 과도하게 응고될 수 있습니다.혈소판감소증은 재생 불량성 빈혈, 방사선 노출, 골수 손상, 임신, 항암제나 항생제, 전신 세균성 감염 등으로 인해 발생할 수 있습니다.혈소판증가증은 철분 결핍, 전이암, 골수 기능 장애, 감염증, 수술 등으로 인해 발생할 수 있습니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>180</td>
+                <td>150~370 µL</td>
+            </tr>
+            <tr>
+                <td>혈색소 (Hb) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="혈색소는 폐로부터 다른 장기로 산소를 운반하는 적혈구 내부에서 실제로 산소를 운반하는 물질입니다. 적혈구가 너무 적거나 혈색소가 너무 적은 경우, 혈액이 신체에 필요한 모든 산소를 운반할 수 없어 빈혈이 발생됩니다.높은 혈색소 수치는 탈수, 골수에서의 적혈구 과다생산, 심각한 폐 질환 등으로 인해 발생할 수 있습니다.낮은 혈색소 수치는 빈혈, 철분 또는 비타민B12와 엽산의 결핍, 간경변증, 과다출혈, 신장질환 등으로 인해 발생할 수 있습니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>15.6</td>
+                <td>13~16.5 g/dL</td>
+            </tr>
+            <tr>
+                <td>적혈구용적 (Hct) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="적혈구용적률은 혈액 중 적혈구가 차지하는 비율을 측정하는 것입니다. 적혈구용적률이 감소하면 철 결핍이나 다른 결핍증에 의해 초래될 수 있는 빈혈이 발생됩니다.낮은 적혈구용적률은 빈혈, 비타민이나 무기질의 결핍, 출혈, 간경화증, 암 등으로 인해 발생할 수 있습니다.적혈구용적률을 증가시키는 가장 흔한 원인은 탈수증으로 적절한 수액 섭취로 정상치로 돌아옵니다. 그러나 혈구용적률이 지속적으로 높다면 병원에 방문하여 진료를 받아야 합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>42</td>
+                <td>39~51 %</td>
+            </tr>
+            <tr>
+                <td>호중구 <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="호중구는 백혈구의 가장 큰 비율을 차지하며 다양한 염증, 전염병과 싸우기 위해 골수에서 생성됩니다. 호중구가 감염을 방어하지 못하면 감염을 조절하는데 문제가 발생하게 됩니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>4444</td>
+                <td>3000~7500 개/μL</td>
+            </tr>
+            <tr>
+                <td>림프구 <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="림프구는 이물질이나 세균으로부터 우리 몸을 보호하는 백혈구의 한 유형으로 외부에서 들어오는 항원과 싸워 항체를 형성하는 면역반응에 관여합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>1999</td>
+                <td>1500~4500 개/μL</td>
+            </tr>
+            <tr>
+                <td>단핵구 <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="단핵구는 백혈구의 한 유형으로 호중구와 함께 작동하여 감염 및 기타 질병을 퇴치하는 동시에 손상되거나 죽은 세포를 제거합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>501</td>
+                <td>100~500 개/μL</td>
+            </tr>
+            <tr>
+                <td>평균적혈구용적(MCV) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="평균적혈구용적은 적혈구의 평균 크기를 측정하는 것으로 적혈구, 백혈구, 혈소판 등의 수치를 참고하여 질환을 진단하는데 사용됩니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>94.9</td>
+                <td>82.0~102.0 fL</td>
+            </tr>
+            <tr>
+                <td>평균적혈구혈색소량(MCH) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="평균적혈구혈색소량은 적혈구 내부의 평균 혈색소 양을 측정하는 것으로 평균적혈구용적(MCH)과 평균적혈구혈색소농도(MCHC), 적혈구분포(RDW) 등과 함께 빈혈을 측정하는데 사용됩니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>32.6</td>
+                <td>25.0~33.0 pg</td>
+            </tr>
+            <tr>
+                <td>평균적혈구혈색소농도(MCHC) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="평균적혈구혈색소량은 적혈구 내부의 평균 혈색소 양을 측정하는 것으로 평균적혈구용적(MCH)과 평균적혈구혈색소농도(MCHC), 적혈구분포(RDW) 등과 함께 빈혈을 측정하는데 사용됩니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>34.8</td>
+                <td>30.0~35.0 g/dL</td>
+            </tr>
+            <tr>
+                <td>적혈구분포(RDW) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="평균적혈구혈색소농도는 적혈구 내에 혈색소가 얼마나 농축되어 있는지를 계산한 값으로 빈혈과 다혈증 진단 등에 사용됩니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>12.2</td>
+                <td>11.5~15.4 %</td>
+            </tr>
+            <tr>
+                <td>평균혈소판용적(MPV) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="평균적혈구혈색소농도는 적혈구 내에 혈색소가 얼마나 농축되어 있는지를 계산한 값으로 빈혈과 다혈증 진단 등에 사용됩니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>9.1</td>
+                <td>8.6~12.6 fL</td>
+            </tr>
+            <tr>
+                <td>혈소판분포폭(PDW) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="혈소판분포폭은 혈소판 크기가 얼마나 일정한지, 크기의 분포 정도를 알아보는 검사로 혈소판의 상태를 통해 빈혈 진단에 활용합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>9.8</td>
+                <td>8.8~16.5 %</td>
+            </tr>
+            <tr>
+                <td>혈소판용적(PCT) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="혈소판이 혈액 중에 차지하는 양을 측정하는 것으로 다른 혈액검사와 함께 질환을 진단하는데 활용합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>0.19</td>
+                <td>0.2 ~ 0.4 %</td>
+            </tr>
+            <tr>
+                <td>혈액종양세포 <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="혈액 속 종양세포로 혈액 또는 골수 속에 있는 혈액세포가 유전자를 변이시켜 지속적, 비정상적으로 증식하여 혈액암을 발생됩니다. 제대로 성숙하지 못한 백혈구가 대량으로 혈액 속에 존재하면서 정상적인 백혈구 세포의 수를 감소시켜 면역기능은 물론 산소 운반이나 영양 공급과 같은 기본적인 혈액의 기능을 수행 할 수 없게 합니다. 빈혈, 감염, 출혈이 발생되어 병원에 내원하여 진단하는 경우와 증상이 없어 건강검진에서 발견되는 경우도 있습니다. 혈액암 진단은 골수구종양과 림프구종양을 구분할 수 없어, 진단 및 예후 판정을 위하여 면역표지자, 염색체 및 분자유전검사가 추가로 필요합니다.* 출처 : [이영진 교수, Health 혈액암의 진단방법]">[!]</a></td>
+                <td>없음</td>
+                <td>없음</td>
+            </tr>
+            <tr>
+                <td>호중구 비율(NEUT %) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="호중구 비율은 백혈구 내에서 가장 큰 비율을 차지하는 호중구가 백혈구 내에서 차지하는 비율을 측정한 결과입니다. 호중구 감소증은 백혈구 내 차지하는 비율이 50~70% 정도여야 하는 호중구가, 비정상적으로 감소된 것을 말합니다. 호중구의 수가 1500μL 이하로 감소된 경우를 호중구 감소증이라고 합니다. 호중구는 다양한 염증 및 전염병과 싸우기 위해 골수에서 생성되는데 호중구가 감염을 방어하지 못하면 감염을 조절하는 데 문제가 발생하게 됩니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>56.3</td>
+                <td>54~75 %</td>
+            </tr>
+            <tr>
+                <td>림프구 비율(LYMPH %) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="림프구 비율은 백혈구 내에서 림프구가 차지하는 비율을 측정한 결과입니다. 백혈구 중 림프구가 20~40%를 차지하는 것이 정상이며, 보통 성인의 경우 혈액 마이크로리터당 1,500개 이상이고, 소아의 경우 3,000개 이상입니다. 림프구는 이물질이나 세균으로부터 우리 몸을 보호하는 백혈구의 한 유형으로 외부에서 들어오는 항원과 싸워 항체를 형성하는 면역반응에 관여합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>41.5</td>
+                <td>25~40 %</td>
+            </tr>
+            <tr>
+                <td>단핵구 비율(MONO %) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="단핵구 비율은 백혈구 내에서 단핵구가 차지하는 비율을 측정한 결과입니다. 5%이내로 측정되는 것이 정상이며, 화학요법 또는 골수 장애와 같이 전체 백혈구 수를 감소시키는 상태로 인해 감소할 수 있습니다. 단핵구는 백혈구의 한 유형으로 호중구와 함께 작동하여 감염 및 기타 질병을 퇴치하는 동시에 손상되거나 죽은 세포를 제거합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td>9.4</td>
+                <td>2~8 %</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<!-- Make sure to include jQuery if you're using $(document).ready -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize tooltips
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip({
+        template: '<div class="tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner info-icon-tooltip"></div></div>'
+    });
+
+    // Adjust the tooltip width dynamically
+    $('body').on('inserted.bs.tooltip', function(event) {
+        var $tooltip = $(event.target).data('bs.tooltip').getTipElement();
+        $($tooltip).find('.tooltip-inner').css('max-width', '400px'); // Set the desired width
+    });
+
+    // Prevent default action for info-icon clicks
+    $('.info-icon').click(function(event) {
+        event.preventDefault();
+        // Optionally, you can trigger the tooltip manually here if not already done by data attributes
+        // $(this).tooltip('show');
+    });
+
+    // D3 and Radar Chart logic goes here
+    const width = 450, height = 450;
+    const svg = d3.select('#radarChart').append('svg')
+        .attr('width', '100%') // Make the SVG width responsive
+        .attr('height', height) // Fixed height or make it responsive as per your design
+        .attr('viewBox', `0 0 ${width} ${height}`) // Add viewBox for responsiveness
+        .attr('preserveAspectRatio', 'xMidYMid meet') // Ensure aspect ratio is preserved and centered
+        .append('g')
+        .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+
+    const numCircles = 5;
+    const radius = height / 2;
+    for (let i = 1; i <= numCircles; i++) {
+        svg.append('circle')
+            .attr('r', radius * i / numCircles)
+            .style('fill', 'none')
+            .style('stroke', 'grey')
+            .style('stroke-dasharray', '2');
+    }
+    function calculatePentagonPoints(centerX, centerY, size) {
+        let points = [];
+        for (let i = 0; i < 5; i++) {
+            let angle = (Math.PI / 2) + (2 * Math.PI / 5) * i;
+            let x = centerX + size * Math.cos(angle);
+            let y = centerY - size * Math.sin(angle);
+            points.push({ x, y });
+        }
+        return points;
+    }
+    const pentagonSize = radius * 0.8;
+    const pentagonPoints = calculatePentagonPoints(0, 0, pentagonSize);
+    svg.append('polygon')
+        .data([pentagonPoints])
+        .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+        .attr('stroke', 'green')
+        .attr('stroke-width', 2)
+        .attr('fill', 'none');
+    const smallerPentagonSize = pentagonSize * 0.6;
+    const smallerPentagonPoints = calculatePentagonPoints(0, 0, smallerPentagonSize);
+    svg.append('polygon')
+        .data([smallerPentagonPoints])
+        .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+        .attr('fill', 'none')
+        .attr('stroke', 'green')
+        .attr('stroke-width', 2);
+    pentagonPoints.forEach((outerPoint, i) => {
+        svg.append('polygon')
+            .data([[smallerPentagonPoints[i], outerPoint, pentagonPoints[(i + 1) % 5], smallerPentagonPoints[(i + 1) % 5]]])
+            .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+            .attr('fill', 'lightgreen')
+            .attr('fill-opacity', 0.3)
+            .attr('stroke', 'none');
+    });
+
+    // hard code data for the demo
+    const data = [
+        { axis: "백혈구(WBC)", value: 5.0, min: 0.0, max: 12.0, normal: [4.0, 10.0] },
+        { axis: "적혈구(RBC)", value: 6.2, min: 0.0, max: 6.9, normal: [4.1, 5.6] },
+        { axis: "혈소판수(PLT)", value: 180, min: 0.0, max: 400.0, normal: [150, 370] },
+        { axis: "헤모글로빈(Hb)", value: 15.6, min: 0.0, max: 20.0, normal: [13.0, 16.5] },
+        { axis: "적혈구용적(Hct)", value: 42, min: 0.0, max: 70.0, normal: [39.0, 51.0] }
+    ];
+
+    const rScale = d3.scaleLinear().range([0, radius]).domain([0, 100]);
+
+    // Function to calculate the angle of the axis
+    const angleSlice = Math.PI * 2 / data.length;
+    const calculateAngle = (index) => angleSlice * index - Math.PI / 2;
+
+    // Function to normalize the values
+    const normalize = (value, min, max) => (value - min) / (max - min);
+
+
+    let allPoints = []; // Store all points
+
+    // Plotting the points for each axis
+    data.forEach((d, i) => {
+        const angle = calculateAngle(i);
+        const valueNormalized = normalize(d.value, d.min, d.max) * 100; // Normalized to percentage
+        const normalRangeMinNormalized = normalize(d.normal[0], d.min, d.max) * 100;
+        const normalRangeMaxNormalized = normalize(d.normal[1], d.min, d.max) * 100;
+
+        let pointRadius;
+        let color = 'red';
+
+        // Check if the value is within the normal range
+        if (valueNormalized >= normalRangeMinNormalized && valueNormalized <= normalRangeMaxNormalized) {
+            color = 'green';
+            // Linearly map the normalized value within the normal range to the radius between the small and large pentagon sizes
+            const rangeScale = d3.scaleLinear()
+                .domain([normalRangeMinNormalized, normalRangeMaxNormalized])
+                .range([smallerPentagonSize, pentagonSize]);
+            pointRadius = rangeScale(valueNormalized);
+        } else {
+            // Outside the normal range, use the outer scale
+            pointRadius = rScale(valueNormalized);
+        }
+
+        const x = pointRadius * Math.cos(angle);
+        const y = pointRadius * Math.sin(angle);
+
+        // Draw the point
+        svg.append('circle')
+            .attr('class', 'radar-chart-point')
+            .attr('cx', x)
+            .attr('cy', y)
+            .attr('r', 4)
+            .style('fill', color);
+
+        // Position the labels outside the largest pentagon
+        const labelRadius = pentagonSize * 1.1; // 10% larger than the size of the pentagon
+        const labelX = labelRadius * Math.cos(angle);
+        const labelY = labelRadius * Math.sin(angle);
+
+        svg.append('text')
+            .attr('x', labelX)
+            .attr('y', labelY)
+            .text(d.axis)
+            .style('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .attr('alignment-baseline', 'middle');
+
+        allPoints.push({ x, y, color });
+    });
+
+    for (let i = 0; i < allPoints.length; i++) {
+        const pointA = allPoints[i];
+        const pointB = allPoints[(i + 1) % allPoints.length]; // Ensures the last point connects to the first
+
+        const lineColor = pointA.color === 'red' || pointB.color === 'red' ? 'red' : 'black';
+
+        svg.append('line')
+            .attr('x1', pointA.x)
+            .attr('y1', pointA.y)
+            .attr('x2', pointB.x)
+            .attr('y2', pointB.y)
+            .attr('stroke', lineColor)
+            .attr('stroke-width', 2);
+    }
+});
+</script>
+{% endblock %}

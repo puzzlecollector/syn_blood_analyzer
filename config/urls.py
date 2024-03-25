@@ -22,7 +22,7 @@ from synopex import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('synopex/', include('synopex.urls')),
-    # path('', views.index, name="index"),
-    path('', auth_views.LoginView.as_view(template_name="common/login.html"), name='login'),
+    path('', views.chart_example, name="index"),
+    #path('', auth_views.LoginView.as_view(template_name="common/login.html"), name='login'),
     path('common/', include('common.urls'))
 ]

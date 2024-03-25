@@ -31,8 +31,11 @@ def index(request):
         'current_datetime': formatted_now,
     }
 
-    return render(request, "my_template.html", context)
+    return render(request, "main_landing_page.html", context)
 
 
 def chart_example(request):
     return render(request, "custom_radar_chart.html", {})
+
+def blood_analysis_detail(request):
+    return render(request, "detailed_blood_analysis.html", {})
