@@ -171,19 +171,42 @@
              <div id="chartWalking" class="chart-container" style="display:none;">
                  <!-- Add a canvas element for the walking chart -->
                  <canvas id="walkingChartCanvas"></canvas>
-                 <button type="button" class="btn btn-primary mt-3" id="addWalkingCountButton">오늘 걸음걸이 횟수를 추가해보세요!</button>
+                 <div class="mt-3">
+                    <form id="addWalkingDataForm" class="input-group mb-3">
+                        <input type="text" id="walkingInput" class="form-control" placeholder="걸음수를 입력하세요" aria-label="Enter steps count" aria-describedby="button-addon">
+                        <button class="btn btn-outline-primary" type="submit" id="button-addon">Add Steps</button>
+                    </form>
+                </div>
              </div>
              <div id="chartBloodPressure" class="chart-container" style="display:none;">
-                 <canvas id="bloodPressureChartCanvas"></canvas>
-                 <button type="button" class="btn btn-primary mt-3" id="addBloodPressureButton">오늘 혈압 정보를 추가해보세요!</button>
-             </div>
+                <canvas id="bloodPressureChartCanvas"></canvas>
+                <div class="mt-3">
+                    <form id="addBloodPressureDataForm" class="input-group mb-3">
+                        <!-- Systolic input field -->
+                        <input type="text" id="systolicInput" class="form-control" placeholder="수축기 혈압을 입력하세요" aria-label="Enter systolic blood pressure" aria-describedby="button-addon">
+                        <!-- Diastolic input field -->
+                        <input type="text" id="diastolicInput" class="form-control" placeholder="이완기 혈압을 입력하세요" aria-label="Enter diastolic blood pressure" aria-describedby="button-addon">
+                        <button class="btn btn-outline-primary" type="submit" id="button-addon">Add Blood Pressure</button>
+                    </form>
+                </div>
+            </div>
              <div id="chartBloodSugar" class="chart-container" style="display:none;">
                  <canvas id="bloodSugarChartCanvas"></canvas>
-                 <button type="button" class="btn btn-primary mt-3" id="addBloodSugarButton">오늘 혈당 정보를 추가해보세요!</button>
+                 <div class="mt-3">
+                    <form id="addBloodSugarDataForm" class="input-group mb-3">
+                        <input type="text" id="bloodSugarInput" class="form-control" placeholder="혈당을 입력하세요" aria-label="Enter blood sugar" aria-describedby="button-addon">
+                        <button class="btn btn-outline-primary" type="submit" id="button-addon">Add Blood Sugar</button>
+                    </form>
+                </div>
              </div>
              <div id="chartWeight" class="chart-container" style="display:none;">
                  <canvas id="weightChartCanvas"></canvas>
-                 <button type="button" class="btn btn-primary mt-3" id="addWeightButton">오늘 체중 정보를 추가해보세요!</button>
+                 <div class="mt-3">
+                    <form id="addWeightDataForm" class="input-group mb-3">
+                        <input type="text" id="weightInput" class="form-control" placeholder="체중을 입력하세요" aria-label="Enter weight" aria-describedby="button-addon">
+                        <button class="btn btn-outline-primary" type="submit" id="button-addon">Add Weight</button>
+                    </form>
+                </div>
              </div>
         </div>
 
@@ -580,6 +603,248 @@ drawBoxPlots();
             drawWalkingChart();
         }
     });
+
+    $('#addBloodSugarDataForm').on('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submit action
+
+        // Get the value from the text input
+        var bloodSugarLevel = $('#bloodSugarInput').val();
+
+        // Parse the blood sugar level to a number
+        var bloodSugarNumber = parseFloat(bloodSugarLevel);
+
+        // Check if the blood sugar level is a valid number
+        if (isNaN(bloodSugarNumber)) {
+            alert('Please enter a valid number');
+            return;
+        }
+
+        // Get the current date as a string
+        var currentDate = new Date().toISOString().slice(0, 10);
+
+        // Check if the current date is already in the chart's dataset
+        var labelIndex = window.bloodSugarChart.data.labels.indexOf(currentDate);
+        if(labelIndex !== -1) {
+            // If current date is already present, check if there is data for "Blood Sugar"
+            var currentDayData = window.bloodSugarChart.data.datasets[0].data[labelIndex];
+            if(currentDayData !== undefined) {
+                // If data for "Blood Sugar" already exists, show an error message
+                alert('이미 입력하셨습니다'); // "You have already entered data for today."
+                return;
+            }
+        }
+
+        // Proceed to add new label if necessary
+        if(labelIndex === -1) {
+            window.bloodSugarChart.data.labels.push(currentDate);
+            labelIndex = window.bloodSugarChart.data.labels.length - 1;
+            // Initialize the data point with null for other datasets if they exist
+            window.bloodSugarChart.data.datasets.forEach((dataset) => {
+                while(dataset.data.length < labelIndex) {
+                    dataset.data.push(null);
+                }
+            });
+        }
+
+        // Add new data for "Blood Sugar"
+        window.bloodSugarChart.data.datasets.forEach((dataset) => {
+            if (dataset.label === "Blood Sugar (mg/dL)") {
+                while(dataset.data.length <= labelIndex) {
+                    dataset.data.push(null);
+                }
+                dataset.data[labelIndex] = bloodSugarNumber;
+            }
+        });
+
+        // Update the chart
+        window.bloodSugarChart.update();
+
+        // Reset the input value
+        $('#bloodSugarInput').val('');
+    });
+
+
+    // Event handler for the blood pressure data form submission
+    $('#addBloodPressureDataForm').on('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submit action
+
+        // Get the values from the text inputs
+        var systolicValue = $('#systolicInput').val();
+        var diastolicValue = $('#diastolicInput').val();
+
+        // Parse the blood pressure values to numbers
+        var systolicNumber = parseInt(systolicValue);
+        var diastolicNumber = parseInt(diastolicValue);
+
+        // Check if the blood pressure values are valid numbers
+        if (isNaN(systolicNumber) || isNaN(diastolicNumber)) {
+            alert('Please enter valid numbers for both systolic and diastolic blood pressure');
+            return;
+        }
+
+        // Get the current date as a string
+        var currentDate = new Date().toISOString().slice(0, 10);
+
+        // Check if the current date is already in the chart's dataset
+        var labelIndex = window.bloodPressureChart.data.labels.indexOf(currentDate);
+        if (labelIndex !== -1) {
+            // If current date is already present, check if there is data for both "Systolic" and "Diastolic"
+            var currentSystolicData = window.bloodPressureChart.data.datasets[0].data[labelIndex];
+            var currentDiastolicData = window.bloodPressureChart.data.datasets[1].data[labelIndex];
+            if (currentSystolicData !== undefined && currentDiastolicData !== undefined) {
+                // If data for both already exists, show an error message
+                alert('이미 입력하셨습니다'); // "You have already entered data for today."
+                return;
+            }
+        } else {
+            // If the current date is not present, add new label
+            window.bloodPressureChart.data.labels.push(currentDate);
+            labelIndex = window.bloodPressureChart.data.labels.length - 1;
+            // Initialize the data point with null for other datasets
+            window.bloodPressureChart.data.datasets.forEach((dataset) => {
+                while (dataset.data.length < labelIndex) {
+                    dataset.data.push(null);
+                }
+            });
+        }
+
+        // Add new data for "Systolic" and "Diastolic"
+        window.bloodPressureChart.data.datasets.forEach((dataset) => {
+            if (dataset.label === "Systolic Pressure (mmHg)") {
+                dataset.data[labelIndex] = systolicNumber;
+            } else if (dataset.label === "Diastolic Pressure (mmHg)") {
+                dataset.data[labelIndex] = diastolicNumber;
+            }
+        });
+
+        // Update the chart
+        window.bloodPressureChart.update();
+
+        // Reset the input values
+        $('#systolicInput').val('');
+        $('#diastolicInput').val('');
+    });
+
+    $('#addWeightDataForm').on('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submit action
+
+        // Get the value from the text input
+        var weightValue = $('#weightInput').val();
+
+        // Parse the weight value to a number
+        var weightNumber = parseFloat(weightValue);
+
+        // Check if the weight value is a valid number
+        if (isNaN(weightNumber)) {
+            alert('Please enter a valid number');
+            return;
+        }
+
+        // Get the current date as a string
+        var currentDate = new Date().toISOString().slice(0, 10);
+
+        // Check if the current date is already in the chart's dataset
+        var labelIndex = window.weightChart.data.labels.indexOf(currentDate);
+        if(labelIndex !== -1) {
+            // If current date is already present, check if there is data for "Weight"
+            var currentDayData = window.weightChart.data.datasets[0].data[labelIndex];
+            if(currentDayData !== undefined) {
+                // If data for "Weight" already exists, show an error message
+                alert('이미 입력하셨습니다'); // "You have already entered data for today."
+                return;
+            }
+        }
+
+        // Proceed to add new label if necessary
+        if(labelIndex === -1) {
+            window.weightChart.data.labels.push(currentDate);
+            labelIndex = window.weightChart.data.labels.length - 1;
+            // Initialize the data point with null for other datasets if they exist
+            window.weightChart.data.datasets.forEach((dataset) => {
+                while(dataset.data.length < labelIndex) {
+                    dataset.data.push(null);
+                }
+            });
+        }
+
+        // Add new data for "Weight"
+        window.weightChart.data.datasets.forEach((dataset) => {
+            if (dataset.label === "Weight (kg)") {
+                while(dataset.data.length <= labelIndex) {
+                    dataset.data.push(null);
+                }
+                dataset.data[labelIndex] = weightNumber;
+            }
+        });
+
+        // Update the chart
+        window.weightChart.update();
+
+        // Reset the input value
+        $('#weightInput').val('');
+    });
+
+
+    // Event handler for the walking data form submission
+    $('#addWalkingDataForm').on('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submit action
+
+        // Get the value from the text input
+        var stepsCount = $('#walkingInput').val();
+
+        // Parse the steps count to a number
+        var stepsNumber = parseInt(stepsCount);
+
+        // Check if the steps count is a valid number
+        if (isNaN(stepsNumber)) {
+            alert('Please enter a valid number');
+            return;
+        }
+
+        // Get the current date as a string
+        var currentDate = new Date().toISOString().slice(0, 10);
+
+        // Check if the current date is already in the chart's dataset
+        var labelIndex = window.walkingChart.data.labels.indexOf(currentDate);
+        if(labelIndex !== -1) {
+            // If current date is already present, check if there is data for "Steps"
+            var currentDayData = window.walkingChart.data.datasets[0].data[labelIndex];
+            if(currentDayData !== undefined) {
+                // If data for "Steps" already exists, show an error message
+                alert('이미 입력하셨습니다'); // "You have already entered data for today."
+                return;
+            }
+        }
+
+        // Proceed to add new label if necessary
+        if(labelIndex === -1) {
+            window.walkingChart.data.labels.push(currentDate);
+            labelIndex = window.walkingChart.data.labels.length - 1;
+            // Initialize the data point with null for other datasets if they exist
+            window.walkingChart.data.datasets.forEach((dataset) => {
+                while(dataset.data.length < labelIndex) {
+                    dataset.data.push(null);
+                }
+            });
+        }
+
+        // Add new data for "Steps"
+        window.walkingChart.data.datasets.forEach((dataset) => {
+            if (dataset.label === "Steps") {
+                while(dataset.data.length <= labelIndex) {
+                    dataset.data.push(null);
+                }
+                dataset.data[labelIndex] = stepsNumber;
+            }
+        });
+
+        // Update the chart
+        window.walkingChart.update();
+
+        // Reset the input value
+        $('#walkingInput').val('');
+    });
+
 
     // Add the initialization of the blood pressure chart when its toggle button is clicked
     $('#btnBloodPressure').click(function() {

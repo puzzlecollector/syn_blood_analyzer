@@ -39,3 +39,7 @@ def chart_example(request):
 
 def blood_analysis_detail(request):
     return render(request, "detailed_blood_analysis.html", {})
+
+def blood_test_list(request):
+    tests = [{"id":1, "date":"2024-03-21 14:00"}]
+    return render(request, "test_list.html", {"tests": tests})

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">혈액검사 목록</h2>
+    <!-- Link back to the integrated chart -->
+    <a href="{% url 'synopex:radar_chart_example' %}" class="btn btn-primary mb-3">통합 차트로 돌아가기</a>
+
+    <!-- If there are tests to display -->
+    {% if tests %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">검사 id</th>
+                    <th scope="col">검사 일자</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through each test and display its ID and date -->
+                {% for test in tests %}
+                    <tr>
+                        <td>{{ test.id }}</td>
+                        <td><a href="{% url 'synopex:blood_test_result' %}">{{ test.date }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-muted">검사 기록이 없습니다.</p>
+    {% endif %}
+</div>
+{% endblock %}
