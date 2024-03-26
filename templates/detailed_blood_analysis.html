@@ -23,6 +23,7 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-3">혈액검사</h2>
+    <a href="{% url 'synopex:radar_chart_example' %}">통합 차트로 돌아가기</a>
     <p class="text-muted"><a href="#">⬅️</a>&nbsp;&nbsp; 검사일: 2024년 3월 21일 14:00</p>
 
     <div id="radarChart" class="highlighted-section"></div>
@@ -72,7 +73,7 @@
                 <td>1500~4500 개/μL</td>
             </tr>
             <tr>
-                <td>단핵구 <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="단핵구는 백혈구의 한 유형으로 호중구와 함께 작동하여 감염 및 기타 질병을 퇴치하는 동시에 손상되거나 죽은 세포를 제거합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td style="color: red;">단핵구 <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="단핵구는 백혈구의 한 유형으로 호중구와 함께 작동하여 감염 및 기타 질병을 퇴치하는 동시에 손상되거나 죽은 세포를 제거합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
                 <td>501</td>
                 <td>100~500 개/μL</td>
             </tr>
@@ -107,7 +108,7 @@
                 <td>8.8~16.5 %</td>
             </tr>
             <tr>
-                <td>혈소판용적(PCT) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="혈소판이 혈액 중에 차지하는 양을 측정하는 것으로 다른 혈액검사와 함께 질환을 진단하는데 활용합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td style="color: red;">혈소판용적(PCT) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="혈소판이 혈액 중에 차지하는 양을 측정하는 것으로 다른 혈액검사와 함께 질환을 진단하는데 활용합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
                 <td>0.19</td>
                 <td>0.2 ~ 0.4 %</td>
             </tr>
@@ -122,12 +123,12 @@
                 <td>54~75 %</td>
             </tr>
             <tr>
-                <td>림프구 비율(LYMPH %) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="림프구 비율은 백혈구 내에서 림프구가 차지하는 비율을 측정한 결과입니다. 백혈구 중 림프구가 20~40%를 차지하는 것이 정상이며, 보통 성인의 경우 혈액 마이크로리터당 1,500개 이상이고, 소아의 경우 3,000개 이상입니다. 림프구는 이물질이나 세균으로부터 우리 몸을 보호하는 백혈구의 한 유형으로 외부에서 들어오는 항원과 싸워 항체를 형성하는 면역반응에 관여합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td style="color: red;">림프구 비율(LYMPH %) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="림프구 비율은 백혈구 내에서 림프구가 차지하는 비율을 측정한 결과입니다. 백혈구 중 림프구가 20~40%를 차지하는 것이 정상이며, 보통 성인의 경우 혈액 마이크로리터당 1,500개 이상이고, 소아의 경우 3,000개 이상입니다. 림프구는 이물질이나 세균으로부터 우리 몸을 보호하는 백혈구의 한 유형으로 외부에서 들어오는 항원과 싸워 항체를 형성하는 면역반응에 관여합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
                 <td>41.5</td>
                 <td>25~40 %</td>
             </tr>
             <tr>
-                <td>단핵구 비율(MONO %) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="단핵구 비율은 백혈구 내에서 단핵구가 차지하는 비율을 측정한 결과입니다. 5%이내로 측정되는 것이 정상이며, 화학요법 또는 골수 장애와 같이 전체 백혈구 수를 감소시키는 상태로 인해 감소할 수 있습니다. 단핵구는 백혈구의 한 유형으로 호중구와 함께 작동하여 감염 및 기타 질병을 퇴치하는 동시에 손상되거나 죽은 세포를 제거합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
+                <td style="color: red;">단핵구 비율(MONO %) <a href="#" class="info-icon" data-toggle="tooltip" data-html="true" title="단핵구 비율은 백혈구 내에서 단핵구가 차지하는 비율을 측정한 결과입니다. 5%이내로 측정되는 것이 정상이며, 화학요법 또는 골수 장애와 같이 전체 백혈구 수를 감소시키는 상태로 인해 감소할 수 있습니다. 단핵구는 백혈구의 한 유형으로 호중구와 함께 작동하여 감염 및 기타 질병을 퇴치하는 동시에 손상되거나 죽은 세포를 제거합니다.※ 출처 : 대한진단검사의학회, 서울대학교병원 진단검사의학과 누리집">[!]</a></td>
                 <td>9.4</td>
                 <td>2~8 %</td>
             </tr>
