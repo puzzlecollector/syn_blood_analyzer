@@ -142,18 +142,49 @@
     <div class="row">
         <div class="col-md-8">
               <h4 style="text-align: center;">통합 차트</h4>
-              <a href="{% url 'synopex:blood_test_result' %}">혈액검사 결과 상세보기</a>
-              <div id="radarChart" class="highlighted-section"></div>
-              <div class="boxplot-labels">
-                <span class="boxplot-label">부족</span>
-                <span class="boxplot-label">정상</span>
-                <span class="boxplot-label">과다</span>
+              <!-- Toggle Buttons -->
+              <div class="btn-group mb-3" role="group" aria-label="Chart Toggles">
+                  <button type="button" class="btn btn-secondary" id="btnBloodTest">혈액검사</button>
+                  <button type="button" class="btn btn-secondary" id="btnWalking">걷기</button>
+                  <button type="button" class="btn btn-secondary" id="btnBloodPressure">혈압</button>
+                  <button type="button" class="btn btn-secondary" id="btnBloodSugar">혈당</button>
+                  <button type="button" class="btn btn-secondary" id="btnWeight">체중</button>
               </div>
-              <div class="boxplot" id="boxplotWBC"><span class="info-icon" id="infoWBC">[?]</span></div>
-              <div class="boxplot red-glow" id="boxplotRBC"><span class="info-icon" id="infoRBC">[?]</span></div> <!-- 이상치 데이터 예시 -->
-              <div class="boxplot" id="boxplotPLT"><span class="info-icon" id="infoPLT">[?]</span></div>
-              <div class="boxplot" id="boxplotHb"><span class="info-icon" id="infoHb">[?]</span></div>
-              <div class="boxplot" id="boxplotHct"><span class="info-icon" id="infoHct">[?]</span></div>
+
+              <!-- Chart Container for 혈액검사 -->
+             <div id="chartBloodTest" class="chart-container">
+                 <div id="linkBloodTest">
+                     <a href="{% url 'synopex:blood_test_result' %}">혈액검사 결과 상세보기</a>
+                 </div>
+                 <div id="radarChart" class="highlighted-section"></div>
+                 <div class="boxplot-labels">
+                     <span class="boxplot-label">부족</span>
+                     <span class="boxplot-label">정상</span>
+                     <span class="boxplot-label">과다</span>
+                 </div>
+                 <div class="boxplot" id="boxplotWBC"><span class="info-icon" id="infoWBC">[?]</span></div>
+                 <div class="boxplot red-glow" id="boxplotRBC"><span class="info-icon" id="infoRBC">[?]</span></div> <!-- 이상치 데이터 예시 -->
+                 <div class="boxplot" id="boxplotPLT"><span class="info-icon" id="infoPLT">[?]</span></div>
+                 <div class="boxplot" id="boxplotHb"><span class="info-icon" id="infoHb">[?]</span></div>
+                 <div class="boxplot" id="boxplotHct"><span class="info-icon" id="infoHct">[?]</span></div>
+             </div>
+             <div id="chartWalking" class="chart-container" style="display:none;">
+                 <!-- Add a canvas element for the walking chart -->
+                 <canvas id="walkingChartCanvas"></canvas>
+                 <button type="button" class="btn btn-primary mt-3" id="addWalkingCountButton">오늘 걸음걸이 횟수를 추가해보세요!</button>
+             </div>
+             <div id="chartBloodPressure" class="chart-container" style="display:none;">
+                 <canvas id="bloodPressureChartCanvas"></canvas>
+                 <button type="button" class="btn btn-primary mt-3" id="addBloodPressureButton">오늘 혈압 정보를 추가해보세요!</button>
+             </div>
+             <div id="chartBloodSugar" class="chart-container" style="display:none;">
+                 <canvas id="bloodSugarChartCanvas"></canvas>
+                 <button type="button" class="btn btn-primary mt-3" id="addBloodSugarButton">오늘 혈당 정보를 추가해보세요!</button>
+             </div>
+             <div id="chartWeight" class="chart-container" style="display:none;">
+                 <canvas id="weightChartCanvas"></canvas>
+                 <button type="button" class="btn btn-primary mt-3" id="addWeightButton">오늘 체중 정보를 추가해보세요!</button>
+             </div>
         </div>
 
         <div class="col-md-4">
@@ -186,9 +217,7 @@
                         <img src="{% static 'BHB2.png' %}" alt="BHB2" class="centered-image" style="max-width: 50%;">
                     </a>
                 </div>
-
                 <hr>
-
            </div>
             <div class="advertisement-section">
                 <h5 style="text-align: center;">[광고] 시노텍스 제품을 통하여 더 건강한 라이프스타일을 누려보세요!</h5>
@@ -211,9 +240,20 @@
 <script src="https://d3js.org/d3.v6.min.js"></script>
 <!-- Make sure to include jQuery if you're using $(document).ready -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 $(document).ready(function() {
-    const width = 450, height = 450;
+    // hard code data for the demo
+const data = [
+  { axis: "백혈구(WBC)", value: 5.0, min: 0.0, max: 12.0, normal: [4.0, 10.0] },
+  { axis: "적혈구(RBC)", value: 6.2, min: 0.0, max: 6.9, normal: [4.1, 5.6] },
+  { axis: "혈소판수(PLT)", value: 180, min: 0.0, max: 400.0, normal: [150, 370] },
+  { axis: "헤모글로빈(Hb)", value: 15.6, min: 0.0, max: 20.0, normal: [13.0, 16.5] },
+  { axis: "적혈구용적(Hct)", value: 42, min: 0.0, max: 70.0, normal: [39.0, 51.0] }
+];
+
+function drawRadarChart() {
+  const width = 450, height = 450;
     const svg = d3.select('#radarChart').append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -263,15 +303,6 @@ $(document).ready(function() {
             .attr('stroke', 'none');
     });
 
-    // hard code data for the demo
-    const data = [
-        { axis: "백혈구(WBC)", value: 5.0, min: 0.0, max: 12.0, normal: [4.0, 10.0] },
-        { axis: "적혈구(RBC)", value: 6.2, min: 0.0, max: 6.9, normal: [4.1, 5.6] },
-        { axis: "혈소판수(PLT)", value: 180, min: 0.0, max: 400.0, normal: [150, 370] },
-        { axis: "헤모글로빈(Hb)", value: 15.6, min: 0.0, max: 20.0, normal: [13.0, 16.5] },
-        { axis: "적혈구용적(Hct)", value: 42, min: 0.0, max: 70.0, normal: [39.0, 51.0] }
-    ];
-
     const rScale = d3.scaleLinear().range([0, radius]).domain([0, 100]);
 
     // Function to calculate the angle of the axis
@@ -280,7 +311,6 @@ $(document).ready(function() {
 
     // Function to normalize the values
     const normalize = (value, min, max) => (value - min) / (max - min);
-
 
     let allPoints = []; // Store all points
 
@@ -348,31 +378,26 @@ $(document).ready(function() {
             .attr('stroke', lineColor)
             .attr('stroke-width', 2);
     }
+}
 
+// Create box plots for each data point
+function sanitizeId(name) {
+  // Remove parentheses, spaces, and non-alphanumeric characters except for underscores and dashes
+  // Also, add a prefix if the first character is a digit
+  let newName = name.replace(/[\s\(\)]/g, '');
+  newName = newName.replace(/[^a-zA-Z0-9-_]/g, '');
+  if (newName.match(/^\d/)) {
+    newName = 'id' + newName; // prefix with 'id' to avoid numbers at the start
+  }
+  return newName;
+}
 
+// Define the div for the tooltip
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute");
 
-    // Create box plots for each data point
-
-    function sanitizeId(name) {
-        // Remove parentheses, spaces, and non-alphanumeric characters except for underscores and dashes
-        // Also, add a prefix if the first character is a digit
-        let newName = name.replace(/[\s\(\)]/g, '');
-        newName = newName.replace(/[^a-zA-Z0-9-_]/g, '');
-        if (newName.match(/^\d/)) {
-            newName = 'id' + newName; // prefix with 'id' to avoid numbers at the start
-        }
-        return newName;
-    }
-
-    data.forEach(d => {
-        drawBoxPlot(d, `#boxplot${sanitizeId(d.axis)}`);
-    });
-
-    // Define the div for the tooltip
-    var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0)
-        .style("position", "absolute");
 
     function drawBoxPlot(d, selector) {
         const boxplotWidth = 550;
@@ -444,7 +469,19 @@ $(document).ready(function() {
             .style('font-size', '10px');
     }
 
-    // Ensure event handlers do not conflict
+
+function drawBoxPlots() {
+  // Assuming 'data' is globally accessible or passed as a parameter
+  data.forEach(d => {
+    drawBoxPlot(d, `#boxplot${sanitizeId(d.axis)}`);
+  });
+}
+
+drawRadarChart();
+drawBoxPlots();
+
+// question mark event listeners
+// Ensure event handlers do not conflict
     $(document).off("click", "#infoWBC");
 
     // Event listener for the WBC info icon
@@ -533,6 +570,203 @@ $(document).ready(function() {
             tooltip.style("opacity", 0);
         }
     });
+
+    // Add the initialization of the walking chart when its toggle button is clicked
+    $('#btnWalking').click(function() {
+        hideAllCharts();
+        $('#chartWalking').show();
+        // Call drawWalkingChart only if the chart has not been previously rendered
+        if (typeof window.walkingChart === 'undefined') {
+            drawWalkingChart();
+        }
+    });
+
+    // Add the initialization of the blood pressure chart when its toggle button is clicked
+    $('#btnBloodPressure').click(function() {
+        hideAllCharts();
+        $('#chartBloodPressure').show();
+        // Call drawBloodPressureChart only if the chart has not been previously rendered
+        if (typeof window.bloodPressureChart === 'undefined') {
+            drawBloodPressureChart();
+        }
+    });
+
+    // Add the initialization of the blood pressure chart when its toggle button is clicked
+    $('#btnBloodSugar').click(function() {
+        hideAllCharts();
+        $('#chartBloodSugar').show();
+        if (typeof window.bloodSugarChart === 'undefined') {
+            drawBloodSugarChart();
+        }
+    });
+
+    // Add the initialization of the blood pressure chart when its toggle button is clicked
+    $('#btnBloodSugar').click(function() {
+        hideAllCharts();
+        $('#chartBloodSugar').show();
+        if (typeof window.bloodSugarChart === 'undefined') {
+            drawBloodSugarChart();
+        }
+    });
+
+    // Add the initialization of the blood pressure chart when its toggle button is clicked
+    $('#btnWeight').click(function() {
+        hideAllCharts();
+        $('#chartWeight').show();
+        if (typeof window.weightChart === 'undefined') {
+            drawWeightChart();
+        }
+    });
+
+    // Function to hide all charts
+    function hideAllCharts() {
+        $('#chartBloodTest').hide();
+        $('#chartWalking').hide();
+        $('#chartBloodPressure').hide();
+        $('#chartBloodSugar').hide();
+        $('#chartWeight').hide();
+    }
+
+    // Function to show a specific chart
+    function showChart(chartId) {
+        hideAllCharts();
+        $(chartId).show();
+    }
+
+    // Event handlers for toggle buttons
+    $('#btnBloodTest').click(function() { showChart('#chartBloodTest'); });
+    $('#btnWalking').click(function() { showChart('#chartWalking'); });
+    $('#btnBloodPressure').click(function() { showChart('#chartBloodPressure'); });
+    $('#btnBloodSugar').click(function() { showChart('#chartBloodSugar'); });
+    $('#btnWeight').click(function() { showChart('#chartWeight'); });
+
+    // Initially hide all charts and show the first one
+    hideAllCharts();
+    showChart('#chartBloodTest'); // You can change this to show a different chart by default
 });
+
+function drawWalkingChart() {
+    var ctx = document.getElementById('walkingChartCanvas').getContext('2d');
+    window.walkingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+            datasets: [{
+                label: 'Steps',
+                data: [3000, 4000, 3800, 5000, 5213, 3679],
+                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                borderColor: 'rgba(76, 175, 80, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '걸음'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function drawBloodPressureChart() {
+    var ctx = document.getElementById('bloodPressureChartCanvas').getContext('2d');
+    window.bloodPressureChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+            datasets: [{
+                label: 'Systolic Pressure (mmHg)',
+                data: [115, 110, 120, 118, 113, 116],
+                // We use 'barPercentage' and 'categoryPercentage' to make the bars thin like lines
+                barPercentage: 0.1,
+                categoryPercentage: 0.5,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+            }, {
+                label: 'Diastolic Pressure (mmHg)',
+                data: [75, 74, 80, 78, 72, 74],
+                barPercentage: 0.1,
+                categoryPercentage: 0.5,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            },
+            elements: {
+                point: {
+                    radius: 5 // Adjust the radius of the point (lollipop)
+                }
+            }
+        }
+    });
+}
+
+function drawBloodSugarChart() {
+    var ctx = document.getElementById('bloodSugarChartCanvas').getContext('2d');
+    window.bloodSugarChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+            datasets: [{
+                label: 'Blood Sugar (mg/dL)',
+                data: [90, 95, 100, 92, 88, 94], // Example values for blood sugar levels
+                fill: false,
+                borderColor: 'rgba(255, 159, 64, 1)',
+                tension: 0.1 // This makes the line straight; set to 0.4 for a smoother line
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Blood Sugar (mg/dL)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function drawWeightChart() {
+    var ctx = document.getElementById('weightChartCanvas').getContext('2d');
+    window.weightChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+            datasets: [{
+                label: 'Weight (kg)',
+                data: [90, 91, 92, 90, 89, 88], // Example values for blood sugar levels
+                fill: false,
+                borderColor: 'rgba(72, 202, 228, 1)',
+                tension: 0.1 // This makes the line straight; set to 0.4 for a smoother line
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Weight (kg)'
+                    }
+                }
+            }
+        }
+    });
+}
 </script>
 {% endblock %}
