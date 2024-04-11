@@ -15,3 +15,21 @@ class Profile(models.Model):
         # BMI = weight(kg) / (height(m))^2
         height_in_meters = self.height / 100
         return self.weight / (height_in_meters ** 2)
+    
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    birthdate = models.DateField()
+    gender = models.CharField(max_length=1, choices=(('M', 'Male'), ('F', 'Female')))
+    height = models.IntegerField()
+    weight = models.IntegerField()
+    body_type = models.CharField(max_length=20, choices=(('Muscular', '근육형'), ('Normal', '일반형'), ('Abdominal obesity', '복부 비만형'), ('Overweight', '과체중형'), ('Obese', '비만형')))
+    
+    def __str__(self):
+        return self.user.username
+    
+class UserPin(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    pin = models.CharField(max_length=6)
+
+    def __str__(self):
+        return f"PIN for {self.user.username}"
