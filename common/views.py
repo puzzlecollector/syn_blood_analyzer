@@ -95,6 +95,7 @@ def register_user(request):
     refresh = RefreshToken.for_user(user)
     return Response({'jwt_token': str(refresh.access_token)}, status=status.HTTP_201_CREATED)
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -118,23 +119,41 @@ def login_view(request):
     return JsonResponse({'message': '잘못된 요청입니다.'}, status=400)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def set_pin(request):
-    user = request.user  # Directly use request.user, which is already available due to the IsAuthenticated permission class
-    
+    token = request.data.get('token')
+    if not token:
+        return Response({'error': 'Token is required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        # Decode the token to get the user
+        decoded_data = token_backend.decode(token, verify=True)
+        user_id = decoded_data['user_id']
+        user = User.objects.get(id=user_id)
+    except (TokenError, User.DoesNotExist):
+        return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
+
     pin = request.data.get('pin')
     if not pin:
         return Response({'error': 'PIN is required.'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Set or update the PIN
     UserPin.objects.update_or_create(user=user, defaults={'pin': pin})
     return Response({'message': 'PIN set successfully.'}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def verify_pin(request):
-    user = request.user  # Directly use request.user
-    
+    token = request.data.get('token')
+    if not token:
+        return Response({'error': 'Token is required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        # Decode the token to get the user
+        decoded_data = token_backend.decode(token, verify=True)
+        user_id = decoded_data['user_id']
+        user = User.objects.get(id=user_id)
+    except (TokenError, User.DoesNotExist):
+        return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
+
     pin = request.data.get('pin')
     if not pin:
         return Response({'error': 'PIN is required.'}, status=status.HTTP_400_BAD_REQUEST)
