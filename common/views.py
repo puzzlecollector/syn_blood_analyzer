@@ -96,7 +96,7 @@ def register_user(request):
     refresh = RefreshToken.for_user(user)
     return Response({'jwt_token': str(refresh.access_token)}, status=status.HTTP_201_CREATED)
 
-
+@api_view(['POST'])
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
