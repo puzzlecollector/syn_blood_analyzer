@@ -11,7 +11,7 @@ urlpatterns = [
     path('login/', views.custom_login, name='login'),
     path('api/register', views.register_user, name='register_user'),
     path('api/login', views.login_view, name='api-login'),
-    path('api/set_pin', views.set_pin, name='set-pin'),
-    path('api/verify_pin', views.verify_pin, name='verify-pin'),
+    path('api/setpin', views.set_pin, name='set-pin'),
+    path('api/verifypin', views.verify_pin, name='verify-pin'),
 
 ]
