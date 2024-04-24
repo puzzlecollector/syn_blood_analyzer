@@ -75,6 +75,7 @@ def custom_login(request):
 
 @api_view(['POST'])
 def register_user(request):
+    print("!!!!========================= register_user   request   ", request.data)
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
