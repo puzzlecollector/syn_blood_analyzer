@@ -98,25 +98,28 @@ def register_user(request):
 
 @api_view(['POST'])
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(username=username, password=password)
+    user2 = authenticate(email=username, password=password)
 
-        if user is not None:
-            # User authenticated, generate token
+    if user or user2:
+        # User authenticated, generate token
+        refresh = ''
+        if user:
             refresh = RefreshToken.for_user(user)
-            return JsonResponse({
-                'token': str(refresh.access_token),
-            })
-        else:
-            # Attempt to find a user matching the username or email to provide a more specific error message
-            from django.contrib.auth.models import User
-            if User.objects.filter(username=username).exists() or User.objects.filter(email=username).exists():
-                return JsonResponse({'message': '비밀번호가 일치하지 않습니다.'}, status=400)
-            else:
-                return JsonResponse({'message': '사용자가 존재하지 않습니다.'}, status=404)
+        else: 
+            refresh = RefreshToken.for_user(user2)
+        return JsonResponse({
+            'token': str(refresh.access_token),
+        }, status=200)
+    else:
+        # If authentication fails, return a generic error message
+        return JsonResponse({
+            'message': '로그인 정보를 확인 해주세요.'
+        }, status=400)
 
+    # This line is now redundant and should not be reached
     return JsonResponse({'message': '잘못된 요청입니다.'}, status=400)
 
 @api_view(['POST'])
