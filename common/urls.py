@@ -13,5 +13,5 @@ urlpatterns = [
     path('api/login', views.login_view, name='api-login'),
     path('api/setpin', views.set_pin, name='set-pin'),
     path('api/verifypin', views.verify_pin, name='verify-pin'),
-
+    path('radarchart', views.radar_chart, name='radarchart'),
 ]

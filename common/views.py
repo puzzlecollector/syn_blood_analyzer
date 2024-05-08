@@ -23,7 +23,7 @@ from rest_framework_simplejwt.state import token_backend
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
+import json
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -171,3 +171,24 @@ def verify_pin(request):
     
     except UserPin.DoesNotExist:
         return Response({'message': 'PIN not set for user.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+def radar_chart(request):
+    # Extract query parameters
+    wbc = request.GET.get('WBC', 0)
+    rbc = request.GET.get('RBC', 0)
+    plt = request.GET.get('PLT', 0)
+    hb = request.GET.get('Hb', 0)
+    hct = request.GET.get('Hct', 0)
+
+    # Data for the radar chart
+    data = {
+        'WBC': wbc,
+        'RBC': rbc,
+        'PLT': plt,
+        'Hb': hb,
+        'Hct': hct,
+    }
+
+    # Render the response, passing data to the template
+    return render(request, 'common/radar_chart.html', {'data': json.dumps(data)})
