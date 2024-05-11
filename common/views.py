@@ -24,6 +24,7 @@ from rest_framework_simplejwt.state import token_backend
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 import json
+import datetime
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -172,7 +173,39 @@ def verify_pin(request):
     except UserPin.DoesNotExist:
         return Response({'message': 'PIN not set for user.'}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['POST'])
+def get_profile(request):
+    token = request.data.get('token')
+    if not token:
+        return JsonResponse({'error': 'Token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        # Decode the token to get the user
+        decoded_data = token_backend.decode(token, verify=True)
+        user_id = decoded_data['user_id']
+        user = User.objects.get(id=user_id)
+    except (TokenError, User.DoesNotExist):
+        return JsonResponse({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+    # Assuming UserProfile contains birthdate and related profile info
+    try:
+        profile = UserProfile.objects.get(user=user)
+        # Calculate age
+        today = datetime.date.today()
+        age = today.year - profile.birthdate.year - ((today.month, today.day) < (profile.birthdate.month, profile.birthdate.day))
+
+        profile_data = {
+            'name': user.username,
+            'birthdate': profile.birthdate.strftime('%Y-%m-%d'),
+            'age': age,
+            'height': profile.height,
+            'weight': profile.weight,
+            'gender': profile.gender,
+        }
+        return JsonResponse(profile_data, safe=False, status=status.HTTP_200_OK)
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'error': 'UserProfile does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+    
 def radar_chart(request):
     # Extract query parameters
     wbc = request.GET.get('WBC', 0)
