@@ -92,7 +92,7 @@ def register_user(request):
     if User.objects.filter(email=email).exists():
         return Response({'error': '이미 존재하는 이메일입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    user = User.objects.create_user(username=username, email=email, password=password, name=name)
+    user = User.objects.create_user(username=username, email=email, password=password, first_name=name, last_name=name)
     UserProfile.objects.create(user=user, birthdate=birthdate, gender=gender, height=height, weight=weight, body_type=body_type)
 
     refresh = RefreshToken.for_user(user)
@@ -196,7 +196,7 @@ def get_profile(request):
         age = today.year - profile.birthdate.year - ((today.month, today.day) < (profile.birthdate.month, profile.birthdate.day))
 
         profile_data = {
-            'name': user.name,
+            'name': user.first_name,
             'nickname': user.username,
             'birthdate': profile.birthdate.strftime('%Y-%m-%d'),
             'age': age,
