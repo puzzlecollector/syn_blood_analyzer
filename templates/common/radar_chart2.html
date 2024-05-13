@@ -1,0 +1,179 @@
+<!-- templates/radar_chart.html -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Radar Chart</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <style>
+        html, body { margin: 0; padding: 0; height: 100%; }
+        body { display: flex; justify-content: center; align-items: center; background-color: #FAFAFF; }
+        .chart-container { width: 100%; height: 100%; }
+        #radarChart {
+            height: 100%;
+            width: 100%;
+            /* margin-bottom: 15px;  */
+        }
+        </style>
+    </head>
+    <body>
+        <div class="chart-container">
+            <div id="radarChart" class="highlighted-section"></div>
+        </div>
+        <script>
+            const data = [
+                { axis: "백혈구(WBC)", value: 5.0, min: 0.0, max: 12.0, normal: [4.0, 10.0] },
+                { axis: "적혈구(RBC)", value: 6.2, min: 0.0, max: 6.9, normal: [4.1, 5.6] },
+                { axis: "혈소판수(PLT)", value: 180, min: 0.0, max: 400.0, normal: [150, 370] },
+                { axis: "헤모글로빈(Hb)", value: 15.6, min: 0.0, max: 20.0, normal: [13.0, 16.5] },
+                { axis: "적혈구용적(Hct)", value: 42, min: 0.0, max: 70.0, normal: [39.0, 51.0] }
+            ];
+            function drawRadarChart() {
+                // const width = 900, height = 900;
+                const width = document.getElementById('radarChart').clientWidth;
+                const height = document.getElementById('radarChart').clientHeight;
+                    const svg = d3.select('#radarChart').append('svg')
+                        .attr('width', width)
+                        .attr('height', height)
+                        .append('g')
+                        .attr('transform', `translate(${width / 2}, ${height / 2})`);
+                    const numCircles = 5;
+                    const radius = height / 2;
+                    for (let i = 1; i <= numCircles; i++) {
+                        svg.append('circle')
+                            .attr('r', radius * i / numCircles)
+                            .style('fill', 'none')
+                            .style('stroke', 'grey')
+                            .style('stroke-dasharray', '2');
+                    }
+                    function calculatePentagonPoints(centerX, centerY, size) {
+                        let points = [];
+                        for (let i = 0; i < 5; i++) {
+                            let angle = (Math.PI / 2) + (2 * Math.PI / 5) * i;
+                            let x = centerX + size * Math.cos(angle);
+                            let y = centerY - size * Math.sin(angle);
+                            points.push({ x, y });
+                        }
+                        return points;
+                    }
+                    const pentagonSize = radius * 0.8;
+                    const pentagonPoints = calculatePentagonPoints(0, 0, pentagonSize);
+                    svg.append('polygon')
+                        .data([pentagonPoints])
+                        .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+                        .attr('stroke', '#CAB8FF')
+                        .attr('stroke-width', 2)
+                        .attr('fill', 'none');
+                    const smallerPentagonSize = pentagonSize * 0.6;
+                    const smallerPentagonPoints = calculatePentagonPoints(0, 0, smallerPentagonSize);
+                    svg.append('polygon')
+                        .data([smallerPentagonPoints])
+                        .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+                        .attr('fill', 'none')
+                        .attr('stroke', '#CAB8FF')
+                        .attr('stroke-width', 2);
+                    pentagonPoints.forEach((outerPoint, i) => {
+                        svg.append('polygon')
+                            .data([[smallerPentagonPoints[i], outerPoint, pentagonPoints[(i + 1) % 5], smallerPentagonPoints[(i + 1) % 5]]])
+                            .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
+                            .attr('fill', '#5E548E')
+                            .attr('fill-opacity', 0.3)
+                            .attr('stroke', 'none');
+                    });
+
+                    const rScale = d3.scaleLinear().range([0, radius]).domain([0, 100]);
+
+                    // Function to calculate the angle of the axis
+                    const angleSlice = Math.PI * 2 / data.length;
+                    const calculateAngle = (index) => angleSlice * index - Math.PI / 2;
+
+                    // Function to normalize the values
+                    const normalize = (value, min, max) => (value - min) / (max - min);
+
+                    let allPoints = []; // Store all points
+
+                    // Plotting the points for each axis
+                    data.forEach((d, i) => {
+                        const angle = calculateAngle(i);
+                        const valueNormalized = normalize(d.value, d.min, d.max) * 100; // Normalized to percentage
+                        const normalRangeMinNormalized = normalize(d.normal[0], d.min, d.max) * 100;
+                        const normalRangeMaxNormalized = normalize(d.normal[1], d.min, d.max) * 100;
+
+                        let pointRadius;
+                        let color = 'red';
+
+                        // Check if the value is within the normal range
+                        if (valueNormalized >= normalRangeMinNormalized && valueNormalized <= normalRangeMaxNormalized) {
+                            color = 'purple';
+                            // Linearly map the normalized value within the normal range to the radius between the small and large pentagon sizes
+                            const rangeScale = d3.scaleLinear()
+                                .domain([normalRangeMinNormalized, normalRangeMaxNormalized])
+                                .range([smallerPentagonSize, pentagonSize]);
+                            pointRadius = rangeScale(valueNormalized);
+                        } else {
+                            // Outside the normal range, use the outer scale
+                            pointRadius = rScale(valueNormalized);
+                        }
+
+                        const x = pointRadius * Math.cos(angle);
+                        const y = pointRadius * Math.sin(angle);
+
+                        // Draw the point
+                        let circle = svg.append('circle')
+                            .attr('class', 'radar-chart-point')
+                            .attr('cx', x)
+                            .attr('cy', y)
+                            .attr('r', 4)
+                            .style('fill', color)
+                            .attr('data-axis', d.axis);
+
+                        // Position the labels outside the largest pentagon
+                        const labelRadius = pentagonSize * 1.1; // 10% larger than the size of the pentagon
+                        const labelX = labelRadius * Math.cos(angle);
+                        const labelY = labelRadius * Math.sin(angle);
+
+                        let textElement = svg.append('text')
+                            .attr('x', labelX)
+                            .attr('y', labelY)
+                            .text(d.axis)
+                            .style('text-anchor', 'middle')
+                            .style('font-size', '29px') // used to be 11px 
+                            .attr('alignment-baseline', 'middle')
+                            .attr('data-axis', d.axis);
+
+                        // Check if the current axis is "적혈구(RBC)"
+                        if (d.axis === "적혈구(RBC)") {
+                            textElement.style('cursor', 'pointer') // Optional: change the cursor on hover
+                                    .on('click', function() {
+                                        console.log("testing");
+                                        // This will show the modal when the RBC text is clicked
+                                        $('#rbcModal').modal('show');
+                                    });
+                        }
+
+                        allPoints.push({ x, y, color });
+                    });
+
+
+
+
+                    for (let i = 0; i < allPoints.length; i++) {
+                        const pointA = allPoints[i];
+                        const pointB = allPoints[(i + 1) % allPoints.length]; // Ensures the last point connects to the first
+
+                        const lineColor = pointA.color === 'red' || pointB.color === 'red' ? 'red' : 'black';
+
+                        svg.append('line')
+                            .attr('x1', pointA.x)
+                            .attr('y1', pointA.y)
+                            .attr('x2', pointB.x)
+                            .attr('y2', pointB.y)
+                            .attr('stroke', lineColor)
+                            .attr('stroke-width', 2);
+                    }
+            };
+            drawRadarChart();
+        </script>
+    </body>
+</html>
