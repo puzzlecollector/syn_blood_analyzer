@@ -1,0 +1,72 @@
+<!-- templates/radar_chart.html -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Radar Chart</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <style>
+        html, body { margin: 0; padding: 0; height: 100%; }
+        body { display: flex; justify-content: center; align-items: center; background-color: #FFFFFF;}
+        .chart-container { width: 100%; height: 100%; background-color: #FFFFFF;}
+        #radarChart {
+            height: 100%;
+            width: 100%;
+            background-color: #FFFFFF;
+            /* margin-bottom: 15px;  */
+        }
+        </style>
+    </head>
+    <body>
+        <div class="chart-container">
+            <div id="bloodPressureChartCanvas" class="highlighted-section"></div>
+        </div>
+        <script>
+            $(document).ready(function() {
+                function drawBloodPressureChart() {
+                    var ctx = document.getElementById('bloodPressureChartCanvas').getContext('2d');
+                    window.bloodPressureChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+                            datasets: [{
+                                label: 'Systolic Pressure (mmHg)',
+                                data: [115, 110, 120, 118, 113, 116],
+                                // We use 'barPercentage' and 'categoryPercentage' to make the bars thin like lines
+                                barPercentage: 0.1,
+                                categoryPercentage: 0.5,
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                            }, {
+                                label: 'Diastolic Pressure (mmHg)',
+                                data: [75, 74, 80, 78, 72, 74],
+                                barPercentage: 0.1,
+                                categoryPercentage: 0.5,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 2,
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            },
+                            elements: {
+                                point: {
+                                    radius: 5 // Adjust the radius of the point (lollipop)
+                                }
+                            }
+                        }
+                    });
+                };
+                drawBloodPressureChart();
+            });
+        </script>
+    </body>
+</html>

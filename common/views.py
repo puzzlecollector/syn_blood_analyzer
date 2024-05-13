@@ -227,3 +227,15 @@ def radar_chart(request):
 
     # Render the response, passing data to the template
     return render(request, 'common/radar_chart2.html', {'data': json.dumps(data)})
+
+def walking_chart(request):
+    # Render the response, passing data to the template
+    return render(request, 'common/walking_chart.html')
+
+def bp_chart(request):
+    # Render the response, passing data to the template
+    return render(request, 'common/bp_chart.html')
+
+def bs_chart(request):
+    # Render the response, passing data to the template
+    return render(request, 'common/bs_chart.html')

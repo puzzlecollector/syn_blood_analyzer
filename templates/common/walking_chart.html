@@ -1,0 +1,60 @@
+<!-- templates/radar_chart.html -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Radar Chart</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <style>
+        html, body { margin: 0; padding: 0; height: 100%; }
+        body { display: flex; justify-content: center; align-items: center; background-color: #FFFFFF;}
+        .chart-container { width: 100%; height: 100%; background-color: #FFFFFF;}
+        #walkingChartCanvas {
+            height: 100%;
+            width: 100%;
+            background-color: #FFFFFF;
+            /* margin-bottom: 15px;  */
+        }
+        </style>
+    </head>
+    <body>
+        <div class="chart-container">
+            <canvas id="walkingChartCanvas" class="highlighted-section"></canvas>
+        </div>
+        <script>
+            $(document).ready(function() {
+                function drawWalkingChart() {
+                    var ctx = document.getElementById('walkingChartCanvas').getContext('2d');
+                    window.walkingChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+                            datasets: [{
+                                label: 'Steps',
+                                data: [3000, 4000, 3800, 5000, 5213, 3679],
+                                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                                borderColor: 'rgba(76, 175, 80, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: '걸음'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                };
+                drawWalkingChart();
+            });
+        </script>
+    </body>
+</html>

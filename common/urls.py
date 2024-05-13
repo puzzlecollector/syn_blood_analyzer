@@ -15,4 +15,7 @@ urlpatterns = [
     path('api/verifypin', views.verify_pin, name='verify-pin'),
     path('api/getprofile', views.get_profile, name='get_profile'),
     path('radarchart', views.radar_chart, name='radarchart'),
+    path('walkingchart', views.walking_chart, name='walkingchart'),
+    path('bpchart', views.bp_chart, name='bpchart'),
+    path('bschart', views.bs_chart, name='bschart'),
 ]

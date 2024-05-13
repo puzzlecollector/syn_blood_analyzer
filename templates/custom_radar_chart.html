@@ -3,7 +3,6 @@
 
 {% block content %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-
 <style>
   .container {
       text-align: center;
@@ -134,52 +133,71 @@
     height: auto; /* This will maintain the aspect ratio of the image */
 }
 </style>
-
-
 <!-- Modal -->
-<div class="modal fade" id="rbcModal" tabindex="-1" aria-labelledby="rbcModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="rbcModalLabel">RBC 정보</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        RBC 수치가 정상을 초과하셨네요! <a href="https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919#:~:text=For%20a%20complete%20blood%20count%2C%20a%20member%20of%20the%20health,the%20bend%20in%20your%20elbow.">더 알아보기</a>
-        <!-- Insert any additional information or links here -->
-        <br>
-        <br>
-        <p>완전한 혈액 검사를 위해, 의료 팀의 한 구성원이 팔꿈치의 굴곡에서 보통 정맥에 바늘을 삽입하여 혈액 샘플을 채취합니다. 혈액 샘플은 실험실로 보내집니다. 검사 후에는 즉시 일상 활동으로 돌아갈 수 있습니다.</p>
-               <h5>결과</h5>
-               다음은 성인을 위한 완전한 혈액 검사 결과로, 리터당 세포 수(cells/L) 또는 데실리터당 그램(grams/dL)으로 측정됩니다:
-               <ul>
+<div
+    class="modal fade"
+    id="rbcModal"
+    tabindex="-1"
+    aria-labelledby="rbcModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rbcModalLabel">RBC 정보</h5>
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                RBC 수치가 정상을 초과하셨네요!
+                <a href="https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919#:~:text=For%20a%20complete%20blood%20count%2C%20a%20member%20of%20the%20health,the%20bend%20in%20your%20elbow.">더 알아보기</a>
+                <!-- Insert any additional information or links here -->
+                <br>
+                <br>
+                <p>완전한 혈액 검사를 위해, 의료 팀의 한 구성원이 팔꿈치의 굴곡에서 보통 정맥에 바늘을 삽입하여 혈액 샘플을 채취합니다. 혈액 샘플은 실험실로 보내집니다. 검사 후에는 즉시 일상 활동으로 돌아갈 수 있습니다.</p>
+                <h5>결과</h5>
+                다음은 성인을 위한 완전한 혈액 검사 결과로, 리터당 세포 수(cells/L) 또는 데실리터당 그램(grams/dL)으로 측정됩니다:
+                <ul>
                     <li>적혈구 수: 남성: 4.35-5.65조 개/L, 여성: 3.92-5.13조 개/L</li>
                     <li>헤모글로빈: 남성: 13.2-16.6 그램/dL, 여성: 11.6-15 그램/dL</li>
                     <li>혈액 세포 용적률: 남성: 38.3%-48.6%, 여성: 35.5%-44.9%</li>
                     <li>백혈구 수: 3.4-9.6십억 개/L</li>
                     <li>혈소판 수: 남성: 135십억에서 317십억/L 여성: 157십억에서 371십억/L</li>
-               </ul>
-           </div>
-        <hr>
-
-        <div class="info-section">
-               <h5 style="text-align: center;">관련 건강보조 식품</h5>
+                </ul>
+            </div>
+            <hr>
+            <div class="info-section">
+                <h5 style="text-align: center;">관련 건강보조 식품</h5>
                 <!-- Contents above remain unchanged -->
                 <div class="centered-image-container">
                     <a href="https://kr.iherb.com/pr/real-ketones-keto-bhb-gummies-grape-400-mg-30-gummies-200-mg-per-gummy/131566?gad_source=1&gclid=CjwKCAjw7-SvBhB6EiwAwYdCAYFD5QHmAMZqjiZGQXEoFPOdLzqTfG3O2vGGw0PtZdcpTCS7aO3GAxoCF3MQAvD_BwE&gclsrc=aw.ds">
-                        <img src="{% static 'BHB1.png' %}" alt="BHB1" class="centered-image" style="max-width: 50%;">
+                        <img
+                            src="{% static 'BHB1.png' %}"
+                            alt="BHB1"
+                            class="centered-image"
+                            style="max-width: 50%;"
+                        >
                     </a>
                 </div>
                 <hr>
                 <div class="centered-image-container">
                     <a href="https://kr.iherb.com/pr/keto-science-keto-burn-bhb-gummies-raspberry-60-gummies/134210?gad_source=1&gclid=CjwKCAjw7-SvBhB6EiwAwYdCAT4Hg11LmdLSILaWrK3vZGQdB_0OhR0jejWOXmVKpeZjLEobhfwCJxoCTeAQAvD_BwE&gclsrc=aw.ds">
-                        <img src="{% static 'BHB2.png' %}" alt="BHB2" class="centered-image" style="max-width: 50%;">
+                        <img
+                            src="{% static 'BHB2.png' %}"
+                            alt="BHB2"
+                            class="centered-image"
+                            style="max-width: 50%;"
+                        >
                     </a>
                 </div>
                 <hr>
-           </div>
+            </div>
             <div class="advertisement-section">
                 <h5 style="text-align: center;">[광고] 시노텍스 제품을 통하여 더 건강한 라이프스타일을 누려보세요!</h5>
                 <a href="https://synotex.com/product/detail.html?product_no=488&cate_no=1&display_group=2">
@@ -189,90 +207,138 @@
             <div class="advertisement-section">
                 <h5 style="text-align: center;">[광고] 시노텍스 날씨 알림 및 마스크 가상 착용 어플을 체험해보세요!</h5>
                 <a href="https://play.google.com/store/apps/details?id=com.lynxbus&pli=1">
-                    <img src="{% static 'synopex_mask_app_ad.png' %}" alt="Advertisement" class="ad-image" style="max-width: 70%; display: block; margin: auto; border: 2px solid black;">
+                    <img
+                        src="{% static 'synopex_mask_app_ad.png' %}"
+                        alt="Advertisement"
+                        class="ad-image"
+                        style="max-width: 70%; display: block; margin: auto; border: 2px solid black;"
+                    >
                 </a>
             </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-      </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+        </div>
     </div>
-  </div>
 </div>
-
+</div>
 <div class="container mt-4">
     <!-- Tooltip for displaying information on hover -->
     <div id="tooltip" class="tooltip" style="opacity: 0;"></div>
     <div class="row">
         <div class="col-md-12">
-              <h4 style="text-align: center;">통합 차트</h4>
-              <!-- Toggle Buttons -->
-              <div class="btn-group mb-3" role="group" aria-label="Chart Toggles">
-                  <button type="button" class="btn btn-secondary" id="btnBloodTest">혈액검사</button>
-                  <button type="button" class="btn btn-secondary" id="btnWalking">걷기</button>
-                  <button type="button" class="btn btn-secondary" id="btnBloodPressure">혈압</button>
-                  <button type="button" class="btn btn-secondary" id="btnBloodSugar">혈당</button>
-                  <button type="button" class="btn btn-secondary" id="btnWeight">체중</button>
-              </div>
-
-              <!-- Chart Container for 혈액검사 -->
-             <div id="chartBloodTest" class="chart-container">
-                 <div id="linkBloodTest">
-                     <a href="{% url 'synopex:blood_test_result' %}">혈액검사 결과 상세보기</a>
-                 </div>
-                 <div id="radarChart" class="highlighted-section"></div>
-                 <div class="boxplot-labels">
-                     <span class="boxplot-label">부족</span>
-                     <span class="boxplot-label">정상</span>
-                     <span class="boxplot-label">과다</span>
-                 </div>
-                 <div class="boxplot" id="boxplotWBC"><span class="info-icon" id="infoWBC">[?]</span></div>
-                 <div class="boxplot red-glow" id="boxplotRBC"><span class="info-icon" id="infoRBC">[?]</span></div> <!-- 이상치 데이터 예시 -->
-                 <div class="boxplot" id="boxplotPLT"><span class="info-icon" id="infoPLT">[?]</span></div>
-                 <div class="boxplot" id="boxplotHb"><span class="info-icon" id="infoHb">[?]</span></div>
-                 <div class="boxplot" id="boxplotHct"><span class="info-icon" id="infoHct">[?]</span></div>
-             </div>
-             <div id="chartWalking" class="chart-container" style="display:none;">
-                 <!-- Add a canvas element for the walking chart -->
-                 <canvas id="walkingChartCanvas"></canvas>
-                 <div class="mt-3">
+            <h4 style="text-align: center;">통합 차트</h4>
+            <!-- Toggle Buttons -->
+            <div class="btn-group mb-3" role="group" aria-label="Chart Toggles">
+                <button type="button" class="btn btn-secondary" id="btnBloodTest">혈액검사</button>
+                <button type="button" class="btn btn-secondary" id="btnWalking">걷기</button>
+                <button type="button" class="btn btn-secondary" id="btnBloodPressure">혈압</button>
+                <button type="button" class="btn btn-secondary" id="btnBloodSugar">혈당</button>
+                <button type="button" class="btn btn-secondary" id="btnWeight">체중</button>
+            </div>
+            <!-- Chart Container for 혈액검사 -->
+            <div id="chartBloodTest" class="chart-container">
+                <div id="linkBloodTest">
+                    <a href="{% url 'synopex:blood_test_result' %}">혈액검사 결과 상세보기</a>
+                </div>
+                <div id="radarChart" class="highlighted-section"></div>
+                <div class="boxplot-labels">
+                    <span class="boxplot-label">부족</span>
+                    <span class="boxplot-label">정상</span>
+                    <span class="boxplot-label">과다</span>
+                </div>
+                <div class="boxplot" id="boxplotWBC">
+                    <span class="info-icon" id="infoWBC">[?]</span>
+                </div>
+                <div class="boxplot red-glow" id="boxplotRBC">
+                    <span class="info-icon" id="infoRBC">[?]</span>
+                </div>
+                <!-- 이상치 데이터 예시 -->
+                <div class="boxplot" id="boxplotPLT">
+                    <span class="info-icon" id="infoPLT">[?]</span>
+                </div>
+                <div class="boxplot" id="boxplotHb">
+                    <span class="info-icon" id="infoHb">[?]</span>
+                </div>
+                <div class="boxplot" id="boxplotHct">
+                    <span class="info-icon" id="infoHct">[?]</span>
+                </div>
+            </div>
+            <div id="chartWalking" class="chart-container" style="display:none;">
+                <!-- Add a canvas element for the walking chart -->
+                <canvas id="walkingChartCanvas"></canvas>
+                <div class="mt-3">
                     <form id="addWalkingDataForm" class="input-group mb-3">
-                        <input type="text" id="walkingInput" class="form-control" placeholder="걸음수를 입력하세요" aria-label="Enter steps count" aria-describedby="button-addon">
+                        <input
+                            type="text"
+                            id="walkingInput"
+                            class="form-control"
+                            placeholder="걸음수를 입력하세요"
+                            aria-label="Enter steps count"
+                            aria-describedby="button-addon"
+                        >
                         <button class="btn btn-outline-primary" type="submit" id="button-addon-steps">Add Steps</button>
                     </form>
                 </div>
-             </div>
-             <div id="chartBloodPressure" class="chart-container" style="display:none;">
+            </div>
+            <div id="chartBloodPressure" class="chart-container" style="display:none;">
                 <canvas id="bloodPressureChartCanvas"></canvas>
                 <div class="mt-3">
                     <form id="addBloodPressureDataForm" class="input-group mb-3">
                         <!-- Systolic input field -->
-                        <input type="text" id="systolicInput" class="form-control" placeholder="수축기 혈압을 입력하세요" aria-label="Enter systolic blood pressure" aria-describedby="button-addon">
+                        <input
+                            type="text"
+                            id="systolicInput"
+                            class="form-control"
+                            placeholder="수축기 혈압을 입력하세요"
+                            aria-label="Enter systolic blood pressure"
+                            aria-describedby="button-addon"
+                        >
                         <!-- Diastolic input field -->
-                        <input type="text" id="diastolicInput" class="form-control" placeholder="이완기 혈압을 입력하세요" aria-label="Enter diastolic blood pressure" aria-describedby="button-addon">
+                        <input
+                            type="text"
+                            id="diastolicInput"
+                            class="form-control"
+                            placeholder="이완기 혈압을 입력하세요"
+                            aria-label="Enter diastolic blood pressure"
+                            aria-describedby="button-addon"
+                        >
                         <button class="btn btn-outline-primary" type="submit" id="button-addon-blood-pressure">Add Blood Pressure</button>
                     </form>
                 </div>
             </div>
-             <div id="chartBloodSugar" class="chart-container" style="display:none;">
-                 <canvas id="bloodSugarChartCanvas"></canvas>
-                 <div class="mt-3">
+            <div id="chartBloodSugar" class="chart-container" style="display:none;">
+                <canvas id="bloodSugarChartCanvas"></canvas>
+                <div class="mt-3">
                     <form id="addBloodSugarDataForm" class="input-group mb-3">
-                        <input type="text" id="bloodSugarInput" class="form-control" placeholder="혈당을 입력하세요" aria-label="Enter blood sugar" aria-describedby="button-addon">
+                        <input
+                            type="text"
+                            id="bloodSugarInput"
+                            class="form-control"
+                            placeholder="혈당을 입력하세요"
+                            aria-label="Enter blood sugar"
+                            aria-describedby="button-addon"
+                        >
                         <button class="btn btn-outline-primary" type="submit" id="button-addon-blood-sugar">Add Blood Sugar</button>
                     </form>
                 </div>
-             </div>
-             <div id="chartWeight" class="chart-container" style="display:none;">
-                 <canvas id="weightChartCanvas"></canvas>
-                 <div class="mt-3">
+            </div>
+            <div id="chartWeight" class="chart-container" style="display:none;">
+                <canvas id="weightChartCanvas"></canvas>
+                <div class="mt-3">
                     <form id="addWeightDataForm" class="input-group mb-3">
-                        <input type="text" id="weightInput" class="form-control" placeholder="체중을 입력하세요" aria-label="Enter weight" aria-describedby="button-addon">
+                        <input
+                            type="text"
+                            id="weightInput"
+                            class="form-control"
+                            placeholder="체중을 입력하세요"
+                            aria-label="Enter weight"
+                            aria-describedby="button-addon"
+                        >
                         <button class="btn btn-outline-primary" type="submit" id="button-addon-weight">Add Weight</button>
                     </form>
                 </div>
-             </div>
+            </div>
         </div>
     </div>
 </div>
