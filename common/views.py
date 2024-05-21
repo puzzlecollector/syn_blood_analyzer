@@ -105,6 +105,10 @@ def login_view(request):
     user = authenticate(username=username, password=password)
     user2 = authenticate(email=username, password=password)
 
+    print("!!!========== login_view  username  password    ", username, "    " ,password)
+    print("!!!========== login_view  user    ", user)
+    print("!!!========== login_view  user2    ", user2)
+
     if user or user2:
         # User authenticated, generate token
         refresh = ''
