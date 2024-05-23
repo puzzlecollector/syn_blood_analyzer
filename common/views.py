@@ -373,6 +373,7 @@ def fetch_health_data_history(request):
             'title': '걷기',
             'time': obj.datetime.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
             'steps': obj.actual,  # Assuming actual represents steps taken
+            'target': obj.target
         } for idx, obj in enumerate(queryset)]
 
     elif data_type == 'bloodsugar':
