@@ -248,6 +248,9 @@ def walking_chart(request):
     dates = [data.datetime.strftime('%Y-%m-%d') for data in walking_data]
     steps = [data.actual for data in walking_data]
 
+    dates = dates[::-1]
+    steps = steps[::-1]
+
     context = {
         'dates': dates,
         'steps': steps
@@ -270,6 +273,10 @@ def bp_chart(request):
     dates = [data.datetime.strftime('%Y-%m-%d') for data in bp_data]
     systolic_values = [data.systolic for data in bp_data]
     diastolic_values = [data.diastolic for data in bp_data]
+
+    dates = dates[::-1]
+    systolic_values = systolic_values[::-1]
+    diastolic_values = diastolic_values[::-1]
 
     context = {
         'dates': dates,
@@ -294,6 +301,9 @@ def bs_chart(request):
     bs_data = BloodSugar.objects.filter(user=user).order_by('-datetime')[:6]
     dates = [data.datetime.strftime('%Y-%m-%d') for data in bs_data]
     blood_sugar_values = [data.blood_sugar for data in bs_data]
+
+    dates = dates[::-1]
+    blood_sugar_values = blood_sugar_values[::-1]
 
     context = {
         'dates': dates,
