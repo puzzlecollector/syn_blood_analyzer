@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/getprofile', views.get_profile, name='get_profile'),
     path('radarchart', views.radar_chart, name='radarchart'),
     path('walkingchart', views.walking_chart, name='walkingchart'),
+    path('boxchart', views.boxchart, name='boxchart'),
     path('bpchart', views.bp_chart, name='bpchart'),
     path('bschart', views.bs_chart, name='bschart'),
     path('api/recordhealthdata', views.record_health_data, name='record_health_data'),

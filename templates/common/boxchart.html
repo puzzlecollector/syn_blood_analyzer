@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Custom Radar and Box Plot Charts</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .chart-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .highlighted-section, .boxplot, .boxplot-labels {
+            border: 2px solid #4267B2;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
+            background-color: #fff;
+            margin: 20px auto;
+            width: 550px; 
+        }
+        .boxplot svg {
+            display: block; /* Align svg inside div */
+            margin: auto; /* Center svg */
+        }
+        .boxplot-labels {
+            display: flex;
+            justify-content: space-between; /* Spread the labels across */
+            padding: 0 10px; /* Padding to align with the boxplot scale */
+        }
+        .boxplot-label {
+            font-size: 12px;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="boxplot-labels">
+            <span class="boxplot-label">부족</span>
+            <span class="boxplot-label">정상</span>
+            <span class="boxplot-label">과다</span>
+        </div>
+        <div class="boxplot" id="boxplotWBC"></div>
+        <div class="boxplot red-glow" id="boxplotRBC"></div>
+        <div class="boxplot" id="boxplotPLT"></div>
+        <div class="boxplot" id="boxplotHb"></div>
+        <div class="boxplot" id="boxplotHct"></div>
+        <script>
+        $(document).ready(function() {
+            const data = [
+                { axis: "WBC", value: 5.0, min: 0.0, max: 12.0, normal: [4.0, 10.0] },
+                { axis: "RBC", value: 6.2, min: 0.0, max: 6.9, normal: [4.1, 5.6] },
+                { axis: "PLT", value: 180, min: 0.0, max: 400.0, normal: [150, 370] },
+                { axis: "Hb", value: 15.6, min: 0.0, max: 20.0, normal: [13.0, 16.5] },
+                { axis: "Hct", value: 42, min: 0.0, max: 70.0, normal: [39.0, 51.0] }
+            ];
+
+            data.forEach(function(d) {
+                let selector = `#boxplot${d.axis}`;
+                drawBoxPlot(d, selector);
+            });
+
+            function drawBoxPlot(d, selector) {
+                const boxplotWidth = 550;
+                const boxplotHeight = 100;
+                const margin = { top: 10, right: 30, bottom: 30, left: 40 };
+                const width = boxplotWidth - margin.left - margin.right;
+                const height = boxplotHeight - margin.top - margin.bottom;
+
+                const svg = d3.select(selector)
+                    .append('svg')
+                    .attr('width', boxplotWidth)
+                    .attr('height', boxplotHeight)
+                    .append('g')
+                    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+                const y = d3.scaleLinear()
+                    .domain([d.min, d.max])
+                    .range([0, width]);
+
+                svg.append('line')
+                    .attr('x1', y(d.min))
+                    .attr('x2', y(d.max))
+                    .attr('y1', height / 2)
+                    .attr('y2', height / 2)
+                    .style('stroke', 'black')
+                    .style('stroke-width', '1px');
+
+                svg.append('rect')
+                    .attr('x', y(d.normal[0]))
+                    .attr('width', y(d.normal[1]) - y(d.normal[0]))
+                    .attr('y', height / 4)
+                    .attr('height', height / 2)
+                    .attr('fill', '#4267B2');
+
+                svg.append('line')
+                    .attr('x1', y(d.value))
+                    .attr('x2', y(d.value))
+                    .attr('y1', height / 4)
+                    .attr('y2', (height / 4) * 3)
+                    .style('stroke', 'red')
+                    .style('stroke-width', 2);
+
+                svg.append('text')
+                    .attr('x', width / 2)
+                    .attr('y', height + margin.bottom / 2)
+                    .text(d.axis)
+                    .style('text-anchor', 'middle')
+                    .style('font-size', '10px');
+            }
+        });
+        </script>
+    </body>
+</html>

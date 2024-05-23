@@ -232,6 +232,9 @@ def radar_chart(request):
     # Render the response, passing data to the template
     return render(request, 'common/radar_chart2.html', {'data': json.dumps(data)})
 
+def boxchart(request):
+    return render(request, 'common/boxchart.html')
+
 def walking_chart(request):
     token = request.GET.get('token', None)
     if not token:
