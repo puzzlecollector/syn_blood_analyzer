@@ -18,4 +18,6 @@ urlpatterns = [
     path('walkingchart', views.walking_chart, name='walkingchart'),
     path('bpchart', views.bp_chart, name='bpchart'),
     path('bschart', views.bs_chart, name='bschart'),
+    path('api/recordhealthdata', views.record_health_data, name='record_health_data'),
+    path('api/fetchhealthdatahistory', views.fetch_health_data_history, name='fetch_health_data_history'),
 ]

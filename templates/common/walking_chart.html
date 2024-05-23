@@ -26,15 +26,17 @@
         </div>
         <script>
             $(document).ready(function() {
+                var labels = {{ dates|safe }};
+                var data = {{ steps|safe }};
                 function drawWalkingChart() {
                     var ctx = document.getElementById('walkingChartCanvas').getContext('2d');
                     window.walkingChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+                            labels: labels,
                             datasets: [{
                                 label: 'Steps',
-                                data: [3000, 4000, 3800, 5000, 5213, 3679],
+                                data: data,
                                 backgroundColor: 'rgba(76, 175, 80, 0.2)',
                                 borderColor: 'rgba(76, 175, 80, 1)',
                                 borderWidth: 1

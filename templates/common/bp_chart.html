@@ -26,15 +26,18 @@
         </div>
         <script>
             $(document).ready(function() {
+                var labels = {{ dates|safe }};
+                var systolicData = {{ systolic_values|safe }};
+                var diastolicData = {{ diastolic_values|safe }};
                 function drawBloodPressureChart() {
                     var ctx = document.getElementById('bloodPressureChartCanvas').getContext('2d');
                     window.bloodPressureChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+                            labels: labels,
                             datasets: [{
                                 label: 'Systolic Pressure (mmHg)',
-                                data: [115, 110, 120, 118, 113, 116],
+                                data: systolicData,
                                 // We use 'barPercentage' and 'categoryPercentage' to make the bars thin like lines
                                 barPercentage: 0.1,
                                 categoryPercentage: 0.5,
@@ -43,7 +46,7 @@
                                 borderWidth: 2,
                             }, {
                                 label: 'Diastolic Pressure (mmHg)',
-                                data: [75, 74, 80, 78, 72, 74],
+                                data: diastolicData,
                                 barPercentage: 0.1,
                                 categoryPercentage: 0.5,
                                 backgroundColor: 'rgba(54, 162, 235, 0.5)',

@@ -9,7 +9,7 @@ from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.forms import AuthenticationForm
 
 from django.contrib.auth.models import User
-from .models import UserProfile, UserPin
+from .models import UserProfile, UserPin, BloodPressure, BloodSugar, Walking
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -233,13 +233,157 @@ def radar_chart(request):
     return render(request, 'common/radar_chart2.html', {'data': json.dumps(data)})
 
 def walking_chart(request):
-    # Render the response, passing data to the template
-    return render(request, 'common/walking_chart.html')
+    token = request.GET.get('token', None)
+    if not token:
+        return JsonResponse({'error': 'Token is required'}, status=400)
+
+    try:
+        decoded_data = token_backend.decode(token, verify=True)
+        user = User.objects.get(id=decoded_data['user_id'])
+    except (TokenError, User.DoesNotExist):
+        return JsonResponse({'error': 'Invalid or expired token'}, status=401)
+
+    # Fetch the latest 6 walking data entries
+    walking_data = Walking.objects.filter(user=user).order_by('-date')[:6]
+    dates = [data.date.strftime('%Y-%m-%d') for data in walking_data]
+    steps = [data.actual for data in walking_data]
+
+    context = {
+        'dates': dates,
+        'steps': steps
+    }
+    return render(request, 'common/walking_chart.html', context)
 
 def bp_chart(request):
-    # Render the response, passing data to the template
-    return render(request, 'common/bp_chart.html')
+    token = request.GET.get('token', None)
+    if not token:
+        return JsonResponse({'error': 'Token is required'}, status=400)
+
+    try:
+        decoded_data = token_backend.decode(token, verify=True)
+        user = User.objects.get(id=decoded_data['user_id'])
+    except (TokenError, User.DoesNotExist):
+        return JsonResponse({'error': 'Invalid or expired token'}, status=401)
+
+    # Fetch the latest 6 blood pressure data entries
+    bp_data = BloodPressure.objects.filter(user=user).order_by('-date')[:6]
+    dates = [data.date.strftime('%Y-%m-%d') for data in bp_data]
+    systolic_values = [data.systolic for data in bp_data]
+    diastolic_values = [data.diastolic for data in bp_data]
+
+    context = {
+        'dates': dates,
+        'systolic_values': systolic_values,
+        'diastolic_values': diastolic_values
+    }
+    return render(request, 'common/bp_chart.html', context)
+
 
 def bs_chart(request):
-    # Render the response, passing data to the template
-    return render(request, 'common/bs_chart.html')
+    token = request.GET.get('token', None)
+    if not token:
+        return JsonResponse({'error': 'Token is required'}, status=400)
+
+    try:
+        decoded_data = token_backend.decode(token, verify=True)
+        user = User.objects.get(id=decoded_data['user_id'])
+    except (TokenError, User.DoesNotExist):
+        return JsonResponse({'error': 'Invalid or expired token'}, status=401)
+
+    # Fetch the latest 6 blood sugar data entries
+    bs_data = BloodSugar.objects.filter(user=user).order_by('-date')[:6]
+    dates = [data.date.strftime('%Y-%m-%d') for data in bs_data]
+    blood_sugar_values = [data.blood_sugar for data in bs_data]
+
+    context = {
+        'dates': dates,
+        'blood_sugar_values': blood_sugar_values
+    }
+    return render(request, 'common/bs_chart.html', context)
+
+
+@api_view(['POST'])
+def record_health_data(request):
+    # Extract token and verify
+    token = request.data.get('token')
+    if not token:
+        return JsonResponse({'error': 'Token is required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        # Decode the token to get the user
+        decoded_data = token_backend.decode(token, verify=True)
+        user = User.objects.get(id=decoded_data['user_id'])
+    except (TokenError, User.DoesNotExist):
+        return JsonResponse({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # Extract type and value
+    data_type = request.data.get('type')
+    value = request.data.get('value')
+    
+    if data_type == 'bloodpressure':
+        systolic = value.get('systolic')
+        diastolic = value.get('diastolic')
+        BloodPressure.objects.create(user=user, systolic=systolic, diastolic=diastolic)
+
+    elif data_type == 'walking':
+        target = value.get('target')
+        actual = value.get('actual')
+        Walking.objects.create(user=user, target=target, actual=actual)
+
+    elif data_type == 'bloodsugar':
+        blood_sugar = value.get('bloodsugar')
+        BloodSugar.objects.create(user=user, blood_sugar=blood_sugar)
+
+    else:
+        return JsonResponse({'error': 'Invalid data type specified.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    return JsonResponse({'message': 'Data recorded successfully.'}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+def fetch_health_data_history(request):
+    # Decode the token to get the user
+    token = request.data.get('token')
+    if not token:
+        return JsonResponse({'error': 'Token is required.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        decoded_data = token_backend.decode(token, verify=True)
+        user = User.objects.get(id=decoded_data['user_id'])
+    except (TokenError, User.DoesNotExist):
+        return JsonResponse({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # Determine the type of data to fetch
+    data_type = request.data.get('type')
+
+    if data_type == 'bloodpressure':
+        queryset = BloodPressure.objects.filter(user=user).order_by('-date')
+        data = [{
+            'id': idx,
+            'title': '혈압',
+            'time': obj.date.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
+            'systolic': obj.systolic,
+            'diastolic': obj.diastolic,
+        } for idx, obj in enumerate(queryset)]
+
+    elif data_type == 'walking':
+        queryset = Walking.objects.filter(user=user).order_by('-date')
+        data = [{
+            'id': idx,
+            'title': '걷기',
+            'time': obj.date.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
+            'steps': obj.actual,  # Assuming actual represents steps taken
+        } for idx, obj in enumerate(queryset)]
+
+    elif data_type == 'bloodsugar':
+        queryset = BloodSugar.objects.filter(user=user).order_by('-date')
+        data = [{
+            'id': idx,
+            'title': '혈당',
+            'time': obj.date.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
+            'bs': obj.blood_sugar,
+        } for idx, obj in enumerate(queryset)]
+    else:
+        return JsonResponse({'error': 'Invalid data type specified.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return JsonResponse({'value': data}, safe=False, status=status.HTTP_200_OK)

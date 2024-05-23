@@ -28,15 +28,17 @@
         </div>
         <script>
             $(document).ready(function() {
+                var labels = {{ dates|safe }};
+                var bloodSugarData = {{ blood_sugar_values|safe }};
                 function drawBloodSugarChart() {
                     var ctx = document.getElementById('bloodSugarChartCanvas').getContext('2d');
                     window.bloodSugarChart = new Chart(ctx, {
                         type: 'line',
                         data: {
-                            labels: ['2024-03-21', '2024-03-22', '2024-03-23', '2024-03-24', '2024-03-25', '2024-03-26'],
+                            labels: labels,
                             datasets: [{
                                 label: 'Blood Sugar (mg/dL)',
-                                data: [90, 95, 100, 92, 88, 94], // Example values for blood sugar levels
+                                data: bloodSugarData, // Example values for blood sugar levels
                                 fill: false,
                                 borderColor: 'rgba(255, 159, 64, 1)',
                                 tension: 0.1 // This makes the line straight; set to 0.4 for a smoother line

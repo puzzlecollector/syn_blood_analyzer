@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -33,3 +34,29 @@ class UserPin(models.Model):
 
     def __str__(self):
         return f"PIN for {self.user.username}"
+    
+class BloodPressure(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    systolic = models.IntegerField()
+    diastolic = models.IntegerField()
+    datetime = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username} BP: {self.systolic}/{self.diastolic} at {self.datetime.strftime('%Y-%m-%d %H:%M')}"
+
+class Walking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    target = models.IntegerField()
+    actual = models.IntegerField()
+    datetime = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username} Target: {self.target}, Actual: {self.actual} on {self.datetime.strftime('%Y-%m-%d')}"
+
+class BloodSugar(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    blood_sugar = models.IntegerField()
+    datetime = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username} Blood Sugar: {self.blood_sugar} at {self.datetime.strftime('%Y-%m-%d %H:%M')}"
