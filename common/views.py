@@ -244,7 +244,7 @@ def walking_chart(request):
         return JsonResponse({'error': 'Invalid or expired token'}, status=401)
 
     # Fetch the latest 6 walking data entries
-    walking_data = Walking.objects.filter(user=user).order_by('-date')[:6]
+    walking_data = Walking.objects.filter(user=user).order_by('-datetime')[:6]
     dates = [data.date.strftime('%Y-%m-%d') for data in walking_data]
     steps = [data.actual for data in walking_data]
 
@@ -266,7 +266,7 @@ def bp_chart(request):
         return JsonResponse({'error': 'Invalid or expired token'}, status=401)
 
     # Fetch the latest 6 blood pressure data entries
-    bp_data = BloodPressure.objects.filter(user=user).order_by('-date')[:6]
+    bp_data = BloodPressure.objects.filter(user=user).order_by('-datetime')[:6]
     dates = [data.date.strftime('%Y-%m-%d') for data in bp_data]
     systolic_values = [data.systolic for data in bp_data]
     diastolic_values = [data.diastolic for data in bp_data]
@@ -291,7 +291,7 @@ def bs_chart(request):
         return JsonResponse({'error': 'Invalid or expired token'}, status=401)
 
     # Fetch the latest 6 blood sugar data entries
-    bs_data = BloodSugar.objects.filter(user=user).order_by('-date')[:6]
+    bs_data = BloodSugar.objects.filter(user=user).order_by('-datetime')[:6]
     dates = [data.date.strftime('%Y-%m-%d') for data in bs_data]
     blood_sugar_values = [data.blood_sugar for data in bs_data]
 
@@ -357,7 +357,7 @@ def fetch_health_data_history(request):
     data_type = request.data.get('type')
 
     if data_type == 'bloodpressure':
-        queryset = BloodPressure.objects.filter(user=user).order_by('-date')
+        queryset = BloodPressure.objects.filter(user=user).order_by('-datetime')
         data = [{
             'id': idx,
             'title': '혈압',
@@ -367,7 +367,7 @@ def fetch_health_data_history(request):
         } for idx, obj in enumerate(queryset)]
 
     elif data_type == 'walking':
-        queryset = Walking.objects.filter(user=user).order_by('-date')
+        queryset = Walking.objects.filter(user=user).order_by('-datetime')
         data = [{
             'id': idx,
             'title': '걷기',
@@ -376,7 +376,7 @@ def fetch_health_data_history(request):
         } for idx, obj in enumerate(queryset)]
 
     elif data_type == 'bloodsugar':
-        queryset = BloodSugar.objects.filter(user=user).order_by('-date')
+        queryset = BloodSugar.objects.filter(user=user).order_by('-datetime')
         data = [{
             'id': idx,
             'title': '혈당',
