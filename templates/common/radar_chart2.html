@@ -63,7 +63,7 @@
                     svg.append('polygon')
                         .data([pentagonPoints])
                         .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
-                        .attr('stroke', '#CAB8FF')
+                        .attr('stroke', '#4267B2')
                         .attr('stroke-width', 2)
                         .attr('fill', 'none');
                     const smallerPentagonSize = pentagonSize * 0.6;
@@ -72,13 +72,13 @@
                         .data([smallerPentagonPoints])
                         .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
                         .attr('fill', 'none')
-                        .attr('stroke', '#CAB8FF')
+                        .attr('stroke', '#4267B2')
                         .attr('stroke-width', 2);
                     pentagonPoints.forEach((outerPoint, i) => {
                         svg.append('polygon')
                             .data([[smallerPentagonPoints[i], outerPoint, pentagonPoints[(i + 1) % 5], smallerPentagonPoints[(i + 1) % 5]]])
                             .attr('points', d => d.map(point => [point.x, point.y].join(',')).join(' '))
-                            .attr('fill', '#5E548E')
+                            .attr('fill', '#3C5A99')
                             .attr('fill-opacity', 0.3)
                             .attr('stroke', 'none');
                     });
