@@ -245,7 +245,7 @@ def walking_chart(request):
 
     # Fetch the latest 6 walking data entries
     walking_data = Walking.objects.filter(user=user).order_by('-datetime')[:6]
-    dates = [data.date.strftime('%Y-%m-%d') for data in walking_data]
+    dates = [data.datetime.strftime('%Y-%m-%d') for data in walking_data]
     steps = [data.actual for data in walking_data]
 
     context = {
@@ -267,7 +267,7 @@ def bp_chart(request):
 
     # Fetch the latest 6 blood pressure data entries
     bp_data = BloodPressure.objects.filter(user=user).order_by('-datetime')[:6]
-    dates = [data.date.strftime('%Y-%m-%d') for data in bp_data]
+    dates = [data.datetime.strftime('%Y-%m-%d') for data in bp_data]
     systolic_values = [data.systolic for data in bp_data]
     diastolic_values = [data.diastolic for data in bp_data]
 
@@ -292,7 +292,7 @@ def bs_chart(request):
 
     # Fetch the latest 6 blood sugar data entries
     bs_data = BloodSugar.objects.filter(user=user).order_by('-datetime')[:6]
-    dates = [data.date.strftime('%Y-%m-%d') for data in bs_data]
+    dates = [data.datetime.strftime('%Y-%m-%d') for data in bs_data]
     blood_sugar_values = [data.blood_sugar for data in bs_data]
 
     context = {
@@ -361,7 +361,7 @@ def fetch_health_data_history(request):
         data = [{
             'id': idx,
             'title': '혈압',
-            'time': obj.date.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
+            'time': obj.datetime.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
             'systolic': obj.systolic,
             'diastolic': obj.diastolic,
         } for idx, obj in enumerate(queryset)]
@@ -371,7 +371,7 @@ def fetch_health_data_history(request):
         data = [{
             'id': idx,
             'title': '걷기',
-            'time': obj.date.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
+            'time': obj.datetime.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
             'steps': obj.actual,  # Assuming actual represents steps taken
         } for idx, obj in enumerate(queryset)]
 
@@ -380,7 +380,7 @@ def fetch_health_data_history(request):
         data = [{
             'id': idx,
             'title': '혈당',
-            'time': obj.date.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
+            'time': obj.datetime.strftime('%p %I:%M').replace('AM', '오전').replace('PM', '오후'),
             'bs': obj.blood_sugar,
         } for idx, obj in enumerate(queryset)]
     else:
