@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.contrib.postgres.fields import JSONField 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -60,3 +61,11 @@ class BloodSugar(models.Model):
 
     def __str__(self):
         return f"{self.user.username} Blood Sugar: {self.blood_sugar} at {self.datetime.strftime('%Y-%m-%d %H:%M')}"
+    
+class BloodTest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    results = JSONField()
+    datetime = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username} Blood Test at {self.datetime.strftime('%Y-%m-%d %H:%M')}"

@@ -9,7 +9,7 @@ from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.forms import AuthenticationForm
 
 from django.contrib.auth.models import User
-from .models import UserProfile, UserPin, BloodPressure, BloodSugar, Walking
+from .models import UserProfile, UserPin, BloodPressure, BloodSugar, Walking, BloodTest
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -245,6 +245,7 @@ def walking_chart(request):
         user = User.objects.get(id=decoded_data['user_id'])
     except (TokenError, User.DoesNotExist):
         return JsonResponse({'error': 'Invalid or expired token'}, status=401)
+        
 
     # Fetch the latest 6 walking data entries
     walking_data = Walking.objects.filter(user=user).order_by('-datetime')[:6]
@@ -401,3 +402,59 @@ def fetch_health_data_history(request):
         return JsonResponse({'error': 'Invalid data type specified.'}, status=status.HTTP_400_BAD_REQUEST)
 
     return JsonResponse({'value': data}, safe=False, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def save_blood_test(request):
+    token = request.data.get('token')
+    if not token:
+        return JsonResponse({'error': 'Token is required.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        # Decode the token to get the user ID
+        decoded_data = token_backend.decode(token, verify=True)
+        user_id = decoded_data['user_id']
+        user = User.objects.get(id=user_id)
+        
+        blood_data = request.data.get('bloodResult')
+        if not blood_data:
+            return JsonResponse({'error': 'No blood result data provided.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Save the blood test data
+        BloodTest.objects.create(user=user, results=blood_data)
+        return JsonResponse({'message': 'Blood test data saved successfully.'}, status=status.HTTP_201_CREATED)
+    
+    except TokenError as e:
+        return JsonResponse({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def retrieve_blood_test_history(request):
+    token = request.data.get('token')
+    if not token:
+        return JsonResponse({'error': 'Token is required.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        # Decode the token to get the user ID
+        decoded_data = token_backend.decode(token, verify=True)
+        user_id = decoded_data['user_id']
+        user = User.objects.get(id=user_id)
+        
+        # Retrieve all blood tests for the user, ordered from the most recent
+        blood_tests = BloodTest.objects.filter(user=user).order_by('-datetime')
+        
+        # Format the results
+        results = [{'bloodResult': json.loads(test.results), 'datetime': test.datetime.strftime('%Y-%m-%d %H:%M:%S')} for test in blood_tests]
+        
+        return JsonResponse({'results': results}, status=status.HTTP_200_OK)
+    
+    except TokenError as e:
+        return JsonResponse({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

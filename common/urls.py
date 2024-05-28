@@ -21,4 +21,6 @@ urlpatterns = [
     path('bschart', views.bs_chart, name='bschart'),
     path('api/recordhealthdata', views.record_health_data, name='record_health_data'),
     path('api/fetchhealthdatahistory', views.fetch_health_data_history, name='fetch_health_data_history'),
+    path('api/savebloodtest', views.save_blood_test, name='save_blood_test'),
+    path('api/retrievebloodtesthistory', views.save_blood_test, name='save_blood_test'),
 ]
