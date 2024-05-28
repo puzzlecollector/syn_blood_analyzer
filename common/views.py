@@ -404,7 +404,6 @@ def fetch_health_data_history(request):
     return JsonResponse({'value': data}, safe=False, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def save_blood_test(request):
     token = request.data.get('token')
     if not token:
@@ -432,7 +431,6 @@ def save_blood_test(request):
         return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def retrieve_blood_test_history(request):
     token = request.data.get('token')
     if not token:
