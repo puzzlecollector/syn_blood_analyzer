@@ -446,7 +446,7 @@ def retrieve_blood_test_history(request):
         blood_tests = BloodTest.objects.filter(user=user).order_by('-datetime')
         
         # Format the results
-        results = [{'bloodResult': json.loads(test.results), 'datetime': test.datetime.strftime('%Y-%m-%d %H:%M:%S')} for test in blood_tests]
+        results = [{'bloodResult': test.results, 'datetime': test.datetime.strftime('%Y-%m-%d %H:%M:%S')} for test in blood_tests]
         
         return JsonResponse({'results': results}, status=status.HTTP_200_OK)
     
