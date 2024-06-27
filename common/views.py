@@ -430,6 +430,15 @@ def save_blood_test(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
+
+def format_result(result):
+    try:
+        # Try to convert the result to a float and format it to one decimal place
+        return f"{float(result):.1f}"
+    except (ValueError, TypeError):
+        # If the result cannot be converted to a float, return it as is
+        return result
+    
 @api_view(['POST'])
 def retrieve_blood_test_history(request):
     token = request.data.get('token')
@@ -446,7 +455,11 @@ def retrieve_blood_test_history(request):
         blood_tests = BloodTest.objects.filter(user=user).order_by('-datetime')
         
         # Format the results
-        results = [{'bloodResult': test.results, 'datetime': test.datetime.strftime('%Y-%m-%d %H:%M:%S')} for test in blood_tests]
+        # results = [{'bloodResult': test.results, 'datetime': test.datetime.strftime('%Y-%m-%d %H:%M:%S')} for test in blood_tests]
+        results = [{
+            'bloodResult': {key: format_result(value) for key, value in test.results.items()},
+            'datetime': test.datetime.strftime('%Y-%m-%d %H:%M:%S')
+        } for test in blood_tests]
         
         return JsonResponse({'results': results}, status=status.HTTP_200_OK)
     
