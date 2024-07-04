@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Management Dashboard</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js"></link>
+        <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAFAFF;
+            color: #3C5A99;
+        }
+
+        .sidebar {
+            width: 175px; /* Adjusted width for sidebar */
+            height: 100vh;
+            background-color: #3C5A99;
+            color: #FFFFFF;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: 0.3s;
+            z-index: 1001;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            background-color: #4267B2;
+        }
+
+        .top-nav {
+            height: 50px;
+            background-color: #4267B2;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 175px; /* Adjust to match the sidebar's width */
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1002;
+        }
+
+        .top-nav .user-info {
+            text-align: left;
+        }
+
+        .search-bar {
+            border: 2px solid #FFFFFF;
+            padding: 5px;
+            width: 200px;
+        }
+
+        .main-content {
+            margin-top: 100px; /* Adjust top padding to avoid overlap with top-nav */
+            margin-left: 200px; /* Adjust left margin to avoid overlap with sidebar */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3C5A99;
+            color: #FFFFFF;
+        }
+
+        .profile-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .control-row {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-row input[type="text"], .control-row select {
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+        .control-row button {
+            padding: 10px 20px;
+            background-color: #4267B2;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .control-row button:hover {
+            background-color: #5679C0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 5px;
+            }
+
+            .top-nav, .main-content {
+                left: 60px; /* Adjust for smaller sidebar */
+                right: 0;
+            }
+
+            .top-nav {
+                flex-direction: column;
+            }
+
+            .sidebar a {
+                text-align: center;
+            }
+        }
+        </style>
+    </head>
+    <body>
+        <div class="sidebar">
+            <h1>Lumiio</h1>
+            <a href="/common/admindashboard">Dashboard</a>
+            <a href="/common/userdashboard">사용자 관리</a>
+            <a href="#">콘텐츠 관리</a>
+            <a href="#">시스템 운영</a>
+        </div>
+        <div class="top-nav">
+            <div class="user-info">
+                <span>소속 그룹: 국립암센터</span>
+                |
+                <span>대표 관리자: 김원무</span>
+            </div>
+            <input type="text" class="search-bar" placeholder="사용자 검색...">
+            <img src="profile_icon.png" alt="Profile Icon" style="width: 30px; height: 30px; border-radius: 50%;">
+        </div>
+        <div class="main-content">
+            <div class="control-row">
+                <select>
+                    <option value="10">10개씩 보기</option>
+                    <option value="20">20개씩 보기</option>
+                    <option value="50">50개씩 보기</option>
+                </select>
+                <button>메시지 보내기</button>
+                <button>사용자 등록</button>
+                <input type="text" placeholder="검색...">
+            </div>
+            <table>
+                <tr>
+                    <th>
+                        <input type="checkbox">
+                    </th>
+                    <th>닉네임</th>
+                    <th>실명</th>
+                    <th>나이</th>
+                    <th>연락처</th>
+                    <th>회원가입 상태</th>
+                    <th>그룹전체</th>
+                    <th>등록일</th>
+                    <th>조회</th>
+                </tr>
+                <!-- Example User Data Row -->
+                <tr>
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    <td>
+                        <img class="profile-pic" src="user_image.jpg" alt="Profile Picture">
+                        닉네임1
+                    </td>
+                    <td>
+                        홍길동
+                    </td>
+                    <td>29</td>
+                    <td>***-****-1234</td>
+                    <td>활성</td>
+                    <td>그룹1</td>
+                    <td>2023-01-01</td>
+                    <td>
+                        <button>
+                            <a href="/common/userspecific">조회</a>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    <td>
+                        <img class="profile-pic" src="user_image.jpg" alt="Profile Picture">
+                        닉네임1
+                    </td>
+                    <td>
+                        홍길동
+                    </td>
+                    <td>29</td>
+                    <td>***-****-1234</td>
+                    <td>활성</td>
+                    <td>그룹1</td>
+                    <td>2023-01-01</td>
+                    <td>
+                        <button>
+                            <a href="/common/userspecific">조회</a>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    <td>
+                        <img class="profile-pic" src="user_image.jpg" alt="Profile Picture">
+                        닉네임1
+                    </td>
+                    <td>
+                        홍길동
+                    </td>
+                    <td>29</td>
+                    <td>***-****-1234</td>
+                    <td>활성</td>
+                    <td>그룹1</td>
+                    <td>2023-01-01</td>
+                    <td>
+                        <button>
+                            <a href="/common/userspecific">조회</a>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    <td>
+                        <img class="profile-pic" src="user_image.jpg" alt="Profile Picture">
+                        닉네임1
+                    </td>
+                    <td>
+                        홍길동
+                    </td>
+                    <td>29</td>
+                    <td>***-****-1234</td>
+                    <td>활성</td>
+                    <td>그룹1</td>
+                    <td>2023-01-01</td>
+                    <td>
+                        <button>
+                            <a href="/common/userspecific">조회</a>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    <td>
+                        <img class="profile-pic" src="user_image.jpg" alt="Profile Picture">
+                        닉네임1
+                    </td>
+                    <td>
+                        홍길동
+                    </td>
+                    <td>29</td>
+                    <td>***-****-1234</td>
+                    <td>활성</td>
+                    <td>그룹1</td>
+                    <td>2023-01-01</td>
+                    <td>
+                        <button>
+                            <a href="/common/userspecific">조회</a>
+                        </button>
+                    </td>
+                </tr>
+                <!-- Add more rows as needed -->
+            </table>
+        </div>
+    </body>
+</html>

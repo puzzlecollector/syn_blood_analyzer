@@ -460,7 +460,7 @@ def retrieve_blood_test_history(request):
             'bloodResult': {key: format_result(value) for key, value in test.results.items()},
             'datetime': test.datetime.strftime('%Y-%m-%d %H:%M:%S')
         } for test in blood_tests]
-        
+
         return JsonResponse({'results': results}, status=status.HTTP_200_OK)
     
     except TokenError as e:
@@ -469,3 +469,13 @@ def retrieve_blood_test_history(request):
         return JsonResponse({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def admin_dashboard1(request):
+    return render(request, 'common/admin_dashboard.html') 
+
+def admin_user_dashboard1(request):
+    return render(request, 'common/admin_user_dashboard.html') 
+
+def admin_user_specific(request):
+    return render(request, 'common/admin_user_specific.html') 

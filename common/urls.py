@@ -23,4 +23,7 @@ urlpatterns = [
     path('api/fetchhealthdatahistory', views.fetch_health_data_history, name='fetch_health_data_history'),
     path('api/savebloodtest', views.save_blood_test, name='save_blood_test'),
     path('api/retrievebloodtesthistory', views.retrieve_blood_test_history, name='retrieve_blood_test_history'),
+    path('admindashboard', views.admin_dashboard1, name='admin_dashboard1'),
+    path('userdashboard', views.admin_user_dashboard1, name='admin_user_dashboard1'),
+    path('userspecific', views.admin_user_specific, name='admin_user_specific'),
 ]

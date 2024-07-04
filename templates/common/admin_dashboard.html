@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumiio Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js"></link>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAFAFF;
+            color: #3C5A99;
+        }
+
+        .sidebar {
+            width: 175px; /* Reduced width */
+            height: 100vh;
+            background-color: #3C5A99;
+            color: #FFFFFF;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: 0.3s;
+            z-index: 1001; /* Increased z-index to ensure layering over content */
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            background-color: #4267B2;
+        }
+
+        .top-nav {
+            height: 50px;
+            background-color: #4267B2;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            text-align: right;
+            position: fixed;
+            top: 0;
+            left: 200px; /* Adjusted to match sidebar width */
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1002; /* Ensures it's over the sidebar */
+            transition: 0.3s;
+        }
+
+        .top-nav .user-info {
+            text-align: left;
+        }
+
+        .search-bar {
+            border: 2px solid #FFFFFF;
+            padding: 5px;
+            width: 200px;
+        }
+
+        .main-content {
+            margin-top: 100px;
+            margin-left: 220px; /* Match sidebar width */
+            padding: 60px 20px 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            transition: 0.3s;
+        }
+
+        .card {
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .chart {
+            width: 100%;
+            height: 80%;
+        }
+
+        .statistics {
+            font-size: 16px;
+            color: #4267B2;
+            font-weight: bold;
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 5px;
+            }
+
+            .top-nav {
+                left: 60px;
+            }
+
+            .main-content {
+                margin-left: 60px;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>Lumiio</h1>
+        <a href="#">Dashboard</a>
+        <a href="/common/userdashboard">사용자 관리</a>
+        <a href="#">콘텐츠 관리</a>
+        <a href="#">시스템 운영</a>
+    </div>
+
+    <div class="top-nav">
+        <div class="user-info">
+            <span>소속 그룹: 국립암센터</span> |
+            <span>대표 관리자: 김원무</span>
+        </div>
+        <input type="text" class="search-bar" placeholder="사용자 검색...">
+        <img src="profile_icon.png" alt="Profile Icon" style="width: 30px; height: 30px; border-radius: 50%;">
+    </div>
+
+    <div class="main-content">
+        <div class="card">
+            <h3>누적 가입자</h3>
+            <canvas id="lineChart1" class="chart"></canvas>
+            <!-- <div class="statistics">10,000명 (+6% 전월 대비)</div> -->
+        </div>
+        <div class="card">
+            <h3>신규 가입자</h3>
+            <canvas id="lineChart2" class="chart"></canvas>
+            <!-- <div class="statistics">5 오늘 등록자</div> -->
+        </div>
+        <div class="card">
+            <h3>월간활성사용자</h3>
+            <canvas id="lineChart3" class="chart"></canvas>
+            <!-- <div class="statistics">11 (+2% 전달 대비)</div> -->
+        </div>
+        <div class="card">
+            <h3>일간활성사용자</h3>
+            <canvas id="lineChart4" the chart"></canvas>
+            <!-- <div class="statistics">9 (+1% 전일대비)</div> -->
+        </div>
+        <div class="card">
+            <h3>사용자 분포</h3>
+            <canvas id="pieChart" class="chart"></canvas>
+        </div>
+        <div class="card">
+            <h3>서비스 문의</h3>
+            <!-- Example Table -->
+            <table>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>날짜</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>문의 내용</td>
+                    <td>2023-07-03</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>문의 내용</td>
+                    <td>2023-07-03</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>문의 내용</td>
+                    <td>2023-07-03</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>문의 내용</td>
+                    <td>2023-07-03</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>문의 내용</td>
+                    <td>2023-07-03</td>
+                </tr>
+                <!-- More rows as needed -->
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var ctx1 = document.getElementById('lineChart1').getContext('2d');
+            var lineChart1 = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: '누적 가입자',
+                        data: [50, 60, 70, 180, 190],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var ctx2 = document.getElementById('lineChart2').getContext('2d');
+            var lineChart2 = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: '신규 가입자',
+                        data: [30, 40, 50, 60, 70],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var ctx3 = document.getElementById('lineChart3').getContext('2d');
+            var lineChart3 = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: '월간활성사용자',
+                        data: [10, 20, 30, 40, 50],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var ctx4 = document.getElementById('lineChart4').getContext('2d');
+            var lineChart4 = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: '일간활성사용자',
+                        data: [5, 15, 25, 35, 45],
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var ctxP = document.getElementById('pieChart').getContext('2d');
+            var pieChart = new Chart(ctxP, {
+                type: 'pie',
+                data: {
+                    labels: ['10-20', '21-30', '31-40', '41-50', '51+'],
+                    datasets: [{
+                        label: '사용자 분포',
+                        data: [12, 19, 3, 5, 2],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

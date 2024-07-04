@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Specific Details</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js"></link>
+        <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAFAFF;
+            color: #3C5A99;
+        }
+
+        .sidebar {
+            width: 175px;
+            height: 100vh;
+            background-color: #3C5A99;
+            color: #FFFFFF;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            z-index: 1001;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            background-color: #4267B2;
+        }
+
+        .top-nav {
+            height: 50px;
+            background-color: #4267B2;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 175px;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1002;
+        }
+
+        .main-content {
+            margin-top: 90px;
+            margin-left: 250px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card {
+            background-color: #FFFFFF;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .small-card {
+            flex: 1;
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .chart-card {
+            flex: 1;
+            margin: 10px;
+            width: calc(50% - 20px); /* Adjust size for two charts in a row */
+        }
+
+        @media (max-width: 768px) {
+            .sidebar, .top-nav {
+                width: 60px; /* Smaller sidebar for mobile */
+            }
+
+            .top-nav, .main-content {
+                left: 60px; /* Adjust for smaller sidebar */
+            }
+
+            .sidebar a {
+                text-align: center;
+            }
+        }
+        </style>
+    </head>
+    <body>
+        <div class="sidebar">
+            <h1>Lumiio</h1>
+            <a href="/common/admindashboard">Dashboard</a>
+            <a href="/common/userdashboard">사용자 관리</a>
+            <a href="#">콘텐츠 관리</a>
+            <a href="#">시스템 운영</a>
+        </div>
+        <div class="top-nav">
+            <div class="user-info">
+                <span>소속 그룹: 국립암센터</span>
+                |
+                <span>대표 관리자: 김원무</span>
+            </div>
+            <input type="text" class="search-bar" placeholder="사용자 검색...">
+            <img src="profile_icon.png" alt="Profile Icon" style="width: 30px; height: 30px; border-radius: 50%;">
+        </div>
+        <div class="main-content">
+            <div class="card profile-info">
+                <img src="user_image_large.jpg" alt="User Image" class="profile-pic">
+                <div>
+                    <strong>닉네임:</strong>
+                    홍길동
+                </div>
+                <div>
+                    <strong>실명:</strong>
+                    홍길동
+                </div>
+                <div>
+                    <strong>성별:</strong>
+                    남성
+                </div>
+                <div>
+                    <strong>생년월일:</strong>
+                    1990-01-01
+                </div>
+                <div>
+                    <strong>연락처:</strong>
+                    010-****-1234
+                </div>
+                <div>
+                    <strong>이메일:</strong>
+                    user@example.com
+                </div>
+            </div>
+            <!-- Small cards for basic health metrics -->
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <div class="small-card">Blood Glucose Type: A</div>
+                <div class="small-card">Height: 180 cm</div>
+                <div class="small-card">Weight: 70 kg</div>
+                <div class="small-card">BT: 36.5°C</div>
+                <div class="small-card">WC: 80 cm</div>
+            </div>
+            <!-- Chart cards for detailed metrics -->
+            <div style="display: flex; justify-content: space-between;">
+                <div class="chart-card">
+                    <h3>혈압</h3>
+                    <canvas id="bpChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>혈당</h3>
+                    <canvas id="sugarChart"></canvas>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <div class="chart-card">
+                    <h3>혈액검사</h3>
+                    <canvas id="bloodTestChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>걷기</h3>
+                    <canvas id="walkingChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+        // Initialize Chart.js for each chart
+        var ctxBP = document.getElementById('bpChart').getContext('2d');
+        var bpChart = new Chart(ctxBP, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: '혈압 Systolic',
+                    data: [120, 125, 130, 135, 140],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    fill: false
+                }, {
+                    label: '혈압 Diastolic',
+                    data: [80, 82, 85, 88, 90],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        var ctxSugar = document.getElementById('sugarChart').getContext('2d');
+        var sugarChart = new Chart(ctxSugar, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: '혈당',
+                    data: [5.6, 5.8, 6.0, 5.9, 6.1],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        var ctxWalking = document.getElementById('walkingChart').getContext('2d');
+        var walkingChart = new Chart(ctxWalking, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: '걷기 거리',
+                    data: [1.2, 1.5, 1.8, 2.0, 2.3],
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Add initialization for bloodTestChart if needed
+        </script>
+    </body>
+</html>
