@@ -26,4 +26,10 @@ urlpatterns = [
     path('admindashboard', views.admin_dashboard1, name='admin_dashboard1'),
     path('userdashboard', views.admin_user_dashboard1, name='admin_user_dashboard1'),
     path('userspecific', views.admin_user_specific, name='admin_user_specific'),
+
+
+
+    path('base', views.base_admin, name='base_admin'),
+
+
 ]

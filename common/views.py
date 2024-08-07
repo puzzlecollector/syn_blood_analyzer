@@ -471,6 +471,15 @@ def retrieve_blood_test_history(request):
         return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 
+
+def base_admin(request):
+    return render(request, 'common/base.html') 
+
+
+
+
+
+
 def admin_dashboard1(request):
     return render(request, 'common/admin_dashboard.html') 
 

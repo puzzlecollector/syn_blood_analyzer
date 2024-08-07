@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Admin Page{% endblock %}</title>
+        <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #FAFAFF;
+            overflow-x: hidden;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #3C5A99;
+            padding: 10px 20px;
+            color: white;
+            position: fixed;
+            width: calc(100% - 220px); /* Adjusted for thinner sidebar */
+            left: 220px;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            max-width: 500px;
+            margin: 0 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .search-bar select,
+        .search-bar input,
+        .search-bar button {
+            height: 36px;
+            border: none;
+            outline: none;
+        }
+        .search-bar select {
+            padding: 0 10px;
+            background-color: #f0f0f0;
+        }
+        .search-bar input {
+            flex-grow: 1;
+            padding: 0 10px;
+        }
+        .search-bar button {
+            background-color: #555;
+            color: white;
+            padding: 0 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .search-bar button:hover {
+            background-color: #444;
+            transform: scale(1.05);
+        }
+        .profile-info {
+            display: flex;
+            align-items: center;
+            margin-left: 30px; /* Added margin-left */
+        }
+        .profile-info img {
+            height: 36px;
+            width: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .profile-info span {
+            margin-right: 10px;
+            font-size: 14px;
+            color: white;
+        }
+        .content {
+            padding-top: 70px; /* Adjust according to header height */
+            margin-left: 220px; /* Adjust for thinner sidebar */
+            transition: margin-left 0.3s;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px; /* Adjusted width */
+            height: 100%;
+            background-color: #3C5A99;
+            padding-top: 70px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        .sidebar .menu-item, .sidebar .submenu-item {
+            display: block;
+            padding: 10px 20px;
+            color: white; /* Fixed text color */
+            font-size: 16px; /* Adjusted font size */
+            text-decoration: none;
+            transition: background-color 0.3s, padding-left 0.3s;
+            cursor: pointer;
+        }
+        .sidebar .menu-item:hover, .sidebar .submenu-item:hover {
+            background-color: #2a3e70;
+            padding-left: 30px;
+        }
+        .sidebar .submenu {
+            display: none;
+            padding-left: 20px;
+        }
+        .sidebar .menu-item.active .submenu {
+            display: block;
+        }
+        .sidebar .menu-item .submenu-item {
+            padding-left: 30px;
+        }
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        @media (max-width: 768px) {
+            .header {
+                width: 100%;
+                left: 0;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding-top: 10px;
+            }
+            .sidebar .menu-item, .sidebar .submenu-item {
+                padding: 10px;
+            }
+            .content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .search-bar {
+                flex-grow: 1;
+                max-width: 100%;
+            }
+        }
+        </style>
+    </head>
+    <body>
+        <div class="sidebar" id="sidebar">
+            <div class="menu-item" onclick="toggleSubmenu(this)">
+                Users List
+                <div class="submenu">
+                    <div class="submenu-item">Active Users</div>
+                    <div class="submenu-item">Inactive Users</div>
+                </div>
+            </div>
+            <div class="menu-item" onclick="toggleSubmenu(this)">
+                Settings
+                <div class="submenu">
+                    <div class="submenu-item">General</div>
+                    <div class="submenu-item">Security</div>
+                </div>
+            </div>
+            <div class="menu-item" onclick="toggleSubmenu(this)">
+                Menu Item 3
+                <div class="submenu">
+                    <div class="submenu-item">Sub Item 1</div>
+                    <div class="submenu-item">Sub Item 2</div>
+                </div>
+            </div>
+            <!-- Add more sidebar items as needed -->
+        </div>
+        <header class="header">
+            <div class="logo">
+                <span class="menu-toggle" onclick="toggleSidebar()">&#9776;</span>
+                <img src="" alt="Logo">
+            </div>
+            <div class="search-bar">
+                <select name="search-type">
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+                <input type="text" placeholder="Search...">
+                <button type="submit">Search</button>
+            </div>
+            <div class="profile-info">
+                <img src="" alt="Profile Picture">
+                <span>이름: {{ user.name }}</span>
+                <span>사용자 이름: {{ user.username }}</span>
+                <span>병원: {{ user.hospital }}</span>
+            </div>
+        </header>
+        <div class="content">
+            {% block content %}
+            <!-- Page-specific content goes here -->
+            {% endblock %}
+        </div>
+        <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+        function toggleSubmenu(element) {
+            element.classList.toggle('active');
+        }
+        </script>
+    </body>
+</html>
